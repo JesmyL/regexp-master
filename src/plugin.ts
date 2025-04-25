@@ -255,7 +255,7 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
 
         fs.writeFile(
           modelFilePath,
-          `interface _GlobalScopedNamedRegExpMakerGeneratedTypes extends\n${types
+          `interface _GlobalScopedNamedRegExpMakerGeneratedTypes extends\n  ${types
             .map(props => {
               let typeContent = '';
 

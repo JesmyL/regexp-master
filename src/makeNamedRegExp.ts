@@ -28,6 +28,5 @@ export const makeNamedRegExp = <R extends StrRegExp, Reg extends R extends keyof
 
   if (setLastIndexTo !== undefined) regReps[stringRegExp].regExp.lastIndex = setLastIndexTo;
 
-  console.log(regReps, stringRegExp);
   return regReps[stringRegExp] as never;
 };
