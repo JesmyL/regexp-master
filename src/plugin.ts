@@ -1,4 +1,5 @@
 import fs from 'fs';
+import md5 from 'md5';
 import { makeRegExp } from './makeRegExp';
 import { prepareNameMakedRegExp } from './utils';
 
@@ -11,8 +12,6 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
   const dirName = __dirname.replace(/\\/g, '/');
   const generatesDir = `${dirName}/${srcDir}/regexp-master.gen` as const;
   const knownFilesFilePath = `${generatesDir}/files.json` as const;
-
-  const toCharCodeReplacer = (all: string) => '' + all.charCodeAt(0);
 
   const fillTypes = (types: string[], isOptionalParam: boolean, insertableLiteralContents: Record<string, string>) =>
     types.length === 0
@@ -89,7 +88,7 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
       if (!(src.endsWith('.tsx') || src.endsWith('.ts') || src.endsWith('.js') || src.endsWith('.jsx'))) return;
 
       const fileSrc = src.slice(dirName.length + 1);
-      const modelFilePath = `${generatesDir}/${fileSrc.replace(makeRegExp('/[^-a-z.$=+_]/gi'), toCharCodeReplacer)}.ts`;
+      const modelFilePath = `${generatesDir}/${md5(fileSrc)}.ts`;
 
       if (change.event === 'delete') {
         removeFile(modelFilePath, fileSrc);

@@ -21,11 +21,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/md5": "^2.3.5",
     "@types/node": "^22.15.1",
     "vite": "^6.3.1",
     "vite-plugin-eslint": "^1.8.1"
   },
   "dependencies": {
+    "md5": "^2.3.0",
     "typescript": "~5.7.2"
   }
 }
