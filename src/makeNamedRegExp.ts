@@ -8,7 +8,7 @@ export const makeNamedRegExp = <R extends StrRegExp, Reg extends R extends keyof
   stringRegExp: Reg,
   setLastIndexTo?: number,
 ): Regulars<RegTypes[Reg]> => {
-  if (regReps[stringRegExp] !== undefined) {
+  if (regReps[stringRegExp] === undefined) {
     const { positionedNames, perparedRegStr, positions } = prepareNameMakedRegExp(stringRegExp as never);
 
     regReps[stringRegExp] = {
