@@ -1,7 +1,9 @@
 import { StrRegExp } from './model';
 
 const numbersSet = new Set(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']);
-const findNamedGroupsReg = /\\?\((?:\?<([\w$_]+)>|\?<()>)?/g;
+const findNamedGroupsReg = /(\\*)\((?:\?<([\w$_]+)>|\?<()>)?/g;
+
+export const checkIsSlashedSymbol = (slashes: string) => slashes.length && slashes.length % 4;
 
 export const prepareNameMakedRegExp = (reg: StrRegExp, errorsStore?: string[]) => {
   let openPosition = 0;
@@ -11,8 +13,15 @@ export const prepareNameMakedRegExp = (reg: StrRegExp, errorsStore?: string[]) =
 
   const perparedRegStr = reg.replace(
     findNamedGroupsReg,
-    (all: string, name: string | undefined, emptyName: string | undefined, index: number, restContent: string) => {
-      if (all.startsWith('\\')) return all;
+    (
+      all: string,
+      slashes: string,
+      name: string | undefined,
+      emptyName: string | undefined,
+      index: number,
+      restContent: string,
+    ) => {
+      if (checkIsSlashedSymbol(slashes)) return all;
 
       openPosition++;
       positions.push(openPosition);

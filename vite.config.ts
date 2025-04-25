@@ -1,5 +1,7 @@
+import fs from 'fs';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import { regExpMasterVitePlugin } from './src/plugin';
 
 export default defineConfig(() => {
   return {
@@ -12,6 +14,6 @@ export default defineConfig(() => {
       },
     },
     server: { https: {} },
-    plugins: [],
+    plugins: [regExpMasterVitePlugin({ __dirname, fs })],
   };
 });

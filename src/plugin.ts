@@ -1,19 +1,13 @@
-import fs from 'fs';
 import md5 from 'md5';
 import { makeRegExp } from './makeRegExp';
-import { prepareNameMakedRegExp } from './utils';
+import { regExpMasterVitePlugin as pluginMaker } from './model';
+import { checkIsSlashedSymbol, prepareNameMakedRegExp } from './utils';
 
-export type RegExpMasterVitePlugin = (options: { srcDir?: string; fs: typeof fs; __dirname: string }) => {
-  name: string;
-};
-
-export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src', fs, __dirname }) => {
+export const regExpMasterVitePlugin: typeof pluginMaker = ({ srcDir = 'src', fs, __dirname }) => {
   const bracketsSet = new Set(['`', '"', "'"]);
   const dirName = __dirname.replace(/\\/g, '/');
   const generatesDir = `${dirName}/${srcDir}/regexp-master.gen` as const;
   const knownFilesFilePath = `${generatesDir}/files.json` as const;
-
-  const toCharCodeReplacer = (all: string) => '' + all.charCodeAt(0);
 
   const fillTypes = (types: string[], isOptionalParam: boolean, insertableLiteralContents: Record<string, string>) =>
     types.length === 0
@@ -31,7 +25,7 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
   let knownFiles: string[] = [];
 
   try {
-    knownFiles = JSON.parse('' + fs.readFileSync(knownFilesFilePath));
+    knownFiles = JSON.parse(`${fs.readFileSync(knownFilesFilePath)}`);
   } catch (_error) {
     if (!fs.existsSync(generatesDir)) {
       fs.mkdirSync(generatesDir);
@@ -53,13 +47,13 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
   };
 
   const slashedBracketsReplacer = (all: string, $1: string, $2: string) =>
-    all.length % 2 ? `${$1}\\\\${$2}` : $2 === '`' ? all : `${$1.slice(0, -1)}${$2}`;
+    checkIsSlashedSymbol(all) ? `${$1}\\\\${$2}` : $2 === '`' ? all : `${$1.slice(0, -1)}${$2}`;
 
   const readFileAsync = (src: string) => {
     return new Promise<string>((resolve, reject) => {
       fs.readFile(src, (error, contentBuffer) => {
         if (error) reject(error);
-        else resolve('' + contentBuffer);
+        else resolve(`${contentBuffer}`);
       });
     });
   };
@@ -76,8 +70,11 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
     const s = text.split(makeRegExp('/\\|/g'));
     const f = s.filter(filterUakeReadableUnions);
 
-    return (s.length !== f.length && f.length ? "' | '" : '') + f.join("' | '");
+    return `${s.length !== f.length && f.length ? "' | '" : ''}${f.join("' | '")}`;
   };
+
+  const splitRestOfGroupContent =
+    /((?:\[(?:\d[-\d]*\d)?]|\\[dw])(?:[?*+]|{\d*(?:,\d*)?\})?|\\*\[|.\{(?:0|),\d+\}|{\d+,?\d*\}|\(|\.|\+|.[?*])/;
 
   //////////////////
   // region: opts //
@@ -145,7 +142,7 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
             const reg = makeRegExp('/(\\\\*)\\$\\{[^}]+\\}/gi');
 
             const replacer = (all: string, slashes: string) => {
-              return slashes.length % 2 ? all : replacement;
+              return checkIsSlashedSymbol(slashes) ? all : replacement;
             };
 
             typeKeyRegStr = typeKeyRegStr.replace(reg, replacer);
@@ -169,16 +166,16 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
           if (nameErrors.length === 0) {
             let replacedPerparedRegStr = perparedRegStr
               .replace(makeRegExp('/\\\\\\\\[()]/g'), '')
-              .replace(makeRegExp('/[^)*]\\?/g'), '')
+              .replace(makeRegExp('/[^)*][?*]/g'), '')
               .replace(makeRegExp('/[^()*?]/g'), '');
 
             while (isNeedReplace) {
               isNeedReplace = false;
               replacedPerparedRegStr = replacedPerparedRegStr.replace(
-                makeRegExp('/(?<!\\\\)\\(((?:(?!\\\\)[^(])*?)\\)\\*?\\??/g'),
+                makeRegExp('/(?<!\\\\{2})\\(((?:(?!\\\\)[^(])*?)\\)\\*?\\??/g'),
                 (all, $1) => {
                   isNeedReplace = true;
-                  return all.endsWith('?') || all.endsWith('*') ? `[${$1}]` : '0' + ($1 || '');
+                  return all.endsWith('?') || all.endsWith('*') ? `[${$1}]` : `0${$1 || ''}`;
                 },
               );
             }
@@ -207,18 +204,14 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
               const restContentParts: [string, ...(string | undefined)[]] = restContents[key]
                 .replace(makeRegExp('/\\\\{2}/g'), '\\')
                 .split(makeRegExp('/((?!\\\\)[)])/'))[0]
-                .split(
-                  makeRegExp(
-                    '/(\\[(?:\\d[-\\d]*\\d)?][?*]?|\\\\*\\[|\\+|(?:\\\\+[wd][?*]?)|.[?*]|.\\{(?:0|),\\d+\\}|{\\d+,?\\d?\\}|\\(|\\.)/',
-                  ),
-                  4,
-                ) as never;
+                .split(splitRestOfGroupContent, 4) as never;
 
               const isFirstNumber =
-                restContentParts[1] === '\\\\d' ||
-                (restContentParts[1] && makeRegExp('/\\[\\d[-\\d]*\\d]/').test(restContentParts[1]));
+                restContentParts[1] && makeRegExp('/^(?:\\[\\d[-\\d]*\\d]|\\\\d)/').test(restContentParts[1]);
+
               const optionalNumber =
-                restContentParts[1] && (restContentParts[1].endsWith('?') || restContentParts[1].endsWith('*'))
+                restContentParts[1] &&
+                makeRegExp('/^(?:\\[\\d[-\\d]*\\d]|\\\\d)(?:[?*]|{(?:0|),)/').test(restContentParts[1])
                   ? " | ''"
                   : '';
 

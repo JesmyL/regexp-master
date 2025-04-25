@@ -11,12 +11,15 @@ declare global {
 }
 
 type RegTypes = _GlobalScopedNamedRegExpMakerGeneratedTypes;
-export type Regulars<Ret> = { regExp: RegExp; transform: (args: [string, ...(string | undefined)[]]) => Ret };
+export type NamedRegExpRegulars<Ret> = {
+  regExp: RegExp;
+  transform: (args: [string, ...(string | undefined)[]] | RegExpMatchArray) => Ret;
+};
 
 declare function makeNamedRegExp<R extends StrRegExp, Reg extends R extends keyof RegTypes ? R : keyof RegTypes>(
   stringRegExp: Reg,
   setLastIndexTo?: number,
-): Regulars<RegTypes[Reg]>;
+): NamedRegExpRegulars<RegTypes[Reg]>;
 
 declare function makeRegExp(reg: StrRegExp, setLastIndexTo?: number): RegExp;
 

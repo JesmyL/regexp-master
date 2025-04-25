@@ -1,13 +1,10 @@
 import { makeRegExp } from './makeRegExp';
-import { RegTypes, Regulars, StrRegExp } from './model';
+import { NamedRegExpRegulars, makeNamedRegExp as maker } from './model';
 import { prepareNameMakedRegExp } from './utils';
 
-const regReps: Record<string, Regulars<object>> = {};
+const regReps: Record<string, NamedRegExpRegulars<object>> = {};
 
-export const makeNamedRegExp = <R extends StrRegExp, Reg extends R extends keyof RegTypes ? R : keyof RegTypes>(
-  stringRegExp: Reg,
-  setLastIndexTo?: number,
-): Regulars<RegTypes[Reg]> => {
+export const makeNamedRegExp: typeof maker = (stringRegExp, setLastIndexTo) => {
   if (regReps[stringRegExp] === undefined) {
     const { positionedNames, perparedRegStr, positions } = prepareNameMakedRegExp(stringRegExp as never);
 
