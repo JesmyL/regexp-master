@@ -90,8 +90,7 @@ export const regExpMasterVitePlugin: RegExpMasterVitePlugin = ({ srcDir = 'src',
       if (!(src.endsWith('.tsx') || src.endsWith('.ts') || src.endsWith('.js') || src.endsWith('.jsx'))) return;
 
       const fileSrc = src.slice(dirName.length + 1);
-      const fileParts = fileSrc.split('/');
-      const modelFilePath = `${generatesDir}/${fileParts[fileParts.length - 1]}_${md5(fileSrc)}.ts`;
+      const modelFilePath = `${generatesDir}/${md5(fileSrc)}.ts`;
 
       if (change.event === 'delete') {
         removeFile(modelFilePath, fileSrc);
