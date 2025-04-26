@@ -74,7 +74,7 @@ export const regExpMasterVitePlugin: typeof pluginMaker = ({ srcDir = 'src', fs,
   };
 
   const splitRestOfGroupContent =
-    /((?:\[(?:\d[-\d]*\d)?]|\\[dw])(?:[?*+]|{\d*(?:,\d*)?\})?|\\*\[|.\{(?:0|),\d+\}|{\d+,?\d*\}|\(|\.|\+|.[?*])/;
+    /((?:\[(?:\d[-\d]*\d)?]|\|.+?\\+[|]|(?:\|)?\\+[dws|])(?:[?*+]|{\d*(?:,\d*)?\})?|\\*\[|.\{(?:0|),\d+\}|{\d+,?\d*\}|\(|\.|\+|.[?*])/;
 
   //////////////////
   // region: opts //
@@ -167,12 +167,12 @@ export const regExpMasterVitePlugin: typeof pluginMaker = ({ srcDir = 'src', fs,
             let replacedPerparedRegStr = perparedRegStr
               .replace(makeRegExp('/\\\\\\\\[()]/g'), '')
               .replace(makeRegExp('/[^)*][?*]/g'), '')
-              .replace(makeRegExp('/[^()*?]/g'), '');
+              .replace(makeRegExp('/[^()*?|]/g'), '');
 
             while (isNeedReplace) {
               isNeedReplace = false;
               replacedPerparedRegStr = replacedPerparedRegStr.replace(
-                makeRegExp('/(?<!\\\\{2})\\(((?:(?!\\\\)[^(])*?)\\)\\*?\\??/g'),
+                /(?<!\\{2})\(((?:(?!\\)[^(])*?)\)(?:\*\??|[|?]|)/g,
                 (all, $1) => {
                   isNeedReplace = true;
                   return all.endsWith('?') || all.endsWith('*') ? `[${$1}]` : `0${$1 || ''}`;
@@ -182,7 +182,10 @@ export const regExpMasterVitePlugin: typeof pluginMaker = ({ srcDir = 'src', fs,
 
             isNeedReplace = true;
 
-            replacedPerparedRegStr = replacedPerparedRegStr.replace(makeRegExp('/[^[\\]0]/g'), '');
+            replacedPerparedRegStr = replacedPerparedRegStr
+              .replace(makeRegExp('/\\d\\|\\d/g'), '11')
+              .replace(makeRegExp('/[^[\\]01]/g'), '')
+              .replace(makeRegExp('/\\|/g'), '');
 
             while (isNeedReplace) {
               isNeedReplace = false;

@@ -39,6 +39,11 @@ interface _GlobalScopedNamedRegExpMakerGeneratedTypes extends
   Record<`/(?<num>text [1-3]{,3})/`, { $0: string; num: `text ${number | ''}`;  }>,
   Record<`/(?<conNum>text [1-3]?)/`, { $0: string; conNum: `text ${number | ''}`;  }>,
   Record<`/(?<conNum>text [1-3]*)/`, { $0: string; conNum: `text ${number | ''}`;  }>,
+  Record<`/(?<num>[1-3]+)?(?<bum>aa)/`, { $0: string; bum: 'aa'; num?: `${number}`; }>,
+  Record<`/(?<txt>5|\\d)?/`, { $0: string; txt?: `5${string}`; }>,
+  Record<`/(?<txt>a\\\\\\\\\\|b|c|d)/`, { $0: string; txt: `a${string}`;  }>,
+  Record<`/(?<txt>a|s|f\\\\\\\\|b|c\\d|d)/`, { $0: string; txt: `a${string}`;  }>,
+  Record<`/(?<optional1>opt1|opt)|(?<optional2>opt2)(?<req>req)/`, { $0: string; req: 'req'; optional1?: 'opt1' | 'opt'; optional2?: 'opt2'; }>,
   Record<`/(?<num>[1-3]+)?/`, { $0: string; num?: `${number}`; }>,
-  Record<`/(?<num>[1-3]+)?(?<bum>aa)/`, { $0: string; bum: 'aa'; num?: `${number}`; }>
+  Record<`/(?<num>1|2)?/`, { $0: string; num?: '1' | '2'; }>
 { '': ''; }

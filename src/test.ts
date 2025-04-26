@@ -50,5 +50,15 @@ getValue<`text ${number | ''}`>(makeNamedRegExp('/(?<num>text [1-3]{,3})/').tran
 getValue<`text ${number | ''}`>(makeNamedRegExp('/(?<conNum>text [1-3]?)/').transform(arg).conNum);
 getValue<`text ${number | ''}`>(makeNamedRegExp('/(?<conNum>text [1-3]*)/').transform(arg).conNum);
 
-getValue<`${number}` | undefined>(makeNamedRegExp('/(?<num>[1-3]+)?/').transform(arg).num);
 getValue<{ num?: `${number}`; bum: 'aa' }>(makeNamedRegExp('/(?<num>[1-3]+)?(?<bum>aa)/').transform(arg));
+
+getValue<`5${string}` | undefined>(makeNamedRegExp('/(?<txt>5|\\d)?/').transform(arg).txt);
+getValue<`a${string}`>(makeNamedRegExp('/(?<txt>a\\\\\\\\\\|b|c|d)/').transform(arg).txt);
+getValue<`a${string}`>(makeNamedRegExp('/(?<txt>a\\\\\\\\\\|b|c|d)/').transform(arg).txt);
+getValue<`a${string}`>(makeNamedRegExp('/(?<txt>a|s|f\\\\\\\\|b|c\\d|d)/').transform(arg).txt);
+
+getValue<{ optional1?: `opt1` | 'opt' | undefined }>(
+  makeNamedRegExp('/(?<optional1>opt1|opt)|(?<optional2>opt2)(?<req>req)/').transform(arg),
+);
+getValue<`${number}` | undefined>(makeNamedRegExp('/(?<num>[1-3]+)?/').transform(arg).num);
+getValue<`${number}` | undefined>(makeNamedRegExp('/(?<num>1|2)?/').transform(arg).num);
