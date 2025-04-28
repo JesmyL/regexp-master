@@ -1,6 +1,6 @@
 import { makeRegExp } from './makeRegExp';
 import { NamedRegExpRegulars, makeNamedRegExp as maker } from './model';
-import { prepareNameMakedRegExp } from './utils';
+import { prepareNameMakedRegExp } from './prepareNameMakedRegExp';
 
 const regReps: Record<string, NamedRegExpRegulars<object>> = {};
 
