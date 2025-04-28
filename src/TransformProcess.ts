@@ -190,7 +190,8 @@ export class TransformProcess {
     const contentWithUnions = `\`${groupContent
       .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
       .replace(makeRegExp(`/${this.slashStubSymbol}/g`), '\\')
-      .replace(/`\${string}`/g, 'string')
+      .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '(')
+      .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), ')')
       .split('|')
       .join('` | `')
       .replace(
@@ -205,13 +206,21 @@ export class TransformProcess {
           return this.checkIsSlashedSymbol(slashes) ? all : `\${number${optionalSign}}`;
         },
       )
-      .replace(makeRegExp(`/((?:\\\\\\\\)?[^\\\`])(${this.quantifierRegStr})/`), (all, char, quantifier) =>
+      .replace(makeRegExp(`/((?:\\\\\\\\)?[^\\\`])(${this.quantifierRegStr})/g`), (all, char, quantifier) =>
         this.checkIsOptionalQuantifier(quantifier) ? `\${\`${char}\` | ''}` : all,
+      )
+      .replace(makeRegExp(`/(\\\\+)[ws](${this.quantifierRegStr}|)/g`), (all, slashes) => {
+        return this.checkIsSlashedSymbol(slashes) ? '${string}' : all;
+      })
+      .replace(makeRegExp(`/\\[(?:[^\\]]*?\\]?[^\\]]*)*?\\](${this.quantifierRegStr}|)/g`), (all, quantifier) => {
+        return '${string}';
+      })
+      .replace(makeRegExp(`/([^\\\\])(${this.quantifierRegStr})/g`), (_all, char, quantifier) =>
+        this.checkIsOptionalQuantifier(quantifier) ? '${string}' : `${char}\${string}`,
       )
       .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '|')
       .replace(makeRegExp(`/${this.unionStubSymbol}/g`), '|')
-      .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '(')
-      .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), ')')}\``;
+      .replace(/`\${string}`/g, 'string')}\``;
 
     return contentWithUnions;
   };
@@ -274,7 +283,7 @@ export class TransformProcess {
   cutFileComments = (content: string) => content.replace(/(?:^|\n) *\/{2,}.*/g, '');
 
   replaceStringTemplateInserts = (regStr: string) =>
-    regStr.replace(/(\\*)(\${[\w.]+})/g, (all, slashes) => {
+    regStr.replace(/(\\*)(\${[^{}]+})/g, (all, slashes) => {
       return this.checkIsSlashedSymbol(slashes, 2) ? all : `${slashes.slice(2)}${this.stringStubSymbol}`;
     });
 

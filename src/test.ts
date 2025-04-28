@@ -56,8 +56,8 @@ getValue<{ num?: `${number}`; bum: 'aa' }>(makeNamedRegExp('/(?<num>[1-3]+)?(?<b
 getValue<`5` | `${number}` | undefined>(makeNamedRegExp('/(?<txt>5|\\d)?/').transform(arg).txt);
 getValue<`a\\\\|b` | `c` | `${`d` | ''}`>(makeNamedRegExp('/(?<txt>a\\\\\\\\\\|b|c|d?)/').transform(arg).txt);
 
-getValue<`a` | `s` | `f\\\\` | `b` | `c${number}` | `d`>(
-  makeNamedRegExp('/(?<txt>a|s|f\\\\\\\\|b|c\\d|d)/').transform(arg).txt,
+getValue<`a` | `s` | `f\\\\` | `b` | `c${number}` | `d` | string>(
+  makeNamedRegExp('/(?<txt>a|s|f\\\\\\\\|b|c\\d|d|[-adf ])/').transform(arg).txt,
 );
 
 getValue<{ optional1?: `opt1` | 'opt' | undefined }>(
@@ -74,9 +74,16 @@ makeNamedRegExp(
   `/\\\\(?<str>\\w+\${)(\\\\ \\d[1,2])?((\\d{3,\${txt}\\${str})|(\\\${txt}\\\\\${txt1}\\\\\\\${txt2}\\\\\\\\\${txt3}${str}|${a.b}))/`,
 );
 
+const sooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooLongString = 'str';
+
 makeNamedRegExp(
-  `/\\\\\\(?<!>\\w+\${)(\\\\ \\d[1,2])?((\\d{3,\${txt}\\\\\\\\\\${str})|(\${str}|${a.b}|(?<name>)[1479]))(?<name1>(?<opt1> \\\\\\\\\\( \\() )|(?<opt2> )|)/`,
-);
+  `/\\\\\\(?<!>\\w+\${)(${
+    //
+    sooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooLongString
+  }\\\\ \\d[1,2])?${str}((\\d{3,\${txt}\\\\\\\\\\${str})|(\${str}|${
+    a.b
+  }|(?<name>)[1479]))(?<name1>(?<opt1> \\\\\\\\\\( \\() )|(?<opt2> )|)${sooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooLongString}/`,
+).transform(['']).name1;
 
 makeNamedRegExp(
   `/(?<$0th>(?<$1th>(?<$2nd>){,3})(nonamϭϰe| )+(?<$3th>\\d{2,3}){2,3}\\\\\\\\\\\\\\|\\\${ \\(?<$4>(?<$5th> {3,5}(?<$6th>(?<$7th>(?<$8th>))(){[234]?}(){,})Ϩ)\\)) ${str}in zero/gim`,
