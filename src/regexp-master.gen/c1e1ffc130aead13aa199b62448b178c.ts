@@ -157,7 +157,7 @@ type Tc1e1ffc130aead13aa199b62448b178c_50_$3 = `${Tc1e1ffc130aead13aa199b62448b1
 type Tc1e1ffc130aead13aa199b62448b178c_50_$4 = `${number}{3,{txt}${string}`;
 type Tc1e1ffc130aead13aa199b62448b178c_50_$5 = `\{txt}\\{txt1}\\\{txt2}\\\\{txt3}${string}` | `${string}`;
 
-type Tc1e1ffc130aead13aa199b62448b178c_51_$0 = `\\ϬϬ${`Ϭ` | ''}<!>${string}{)${Tc1e1ffc130aead13aa199b62448b178c_51_$1 | ''}${string}${Tc1e1ffc130aead13aa199b62448b178c_51_$2 | ''}${Tc1e1ffc130aead13aa199b62448b178c_51_name1 | ''}` | `${Tc1e1ffc130aead13aa199b62448b178c_51_opt2 | ''}` | `)${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_51_$0 = `${`\\(` | ''}<!>${string}{)${Tc1e1ffc130aead13aa199b62448b178c_51_$1 | ''}${string}${Tc1e1ffc130aead13aa199b62448b178c_51_$2 | ''}${Tc1e1ffc130aead13aa199b62448b178c_51_name1 | ''}` | `${Tc1e1ffc130aead13aa199b62448b178c_51_opt2 | ''}` | `)${string}`;
 type Tc1e1ffc130aead13aa199b62448b178c_51_$1 = `${string}\\ ${number}${string}`;
 type Tc1e1ffc130aead13aa199b62448b178c_51_$2 = `${Tc1e1ffc130aead13aa199b62448b178c_51_$3 | ''}` | `${Tc1e1ffc130aead13aa199b62448b178c_51_$4 | ''}`;
 type Tc1e1ffc130aead13aa199b62448b178c_51_$3 = `${number}{3,{txt}\\\\${string}`;
@@ -168,7 +168,7 @@ type Tc1e1ffc130aead13aa199b62448b178c_51_opt1 = ` \\\\( (`;
 type Tc1e1ffc130aead13aa199b62448b178c_51_opt2 = ` `;
 
 type Tc1e1ffc130aead13aa199b62448b178c_52_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_52_$0th} ${string}in zero`;
-type Tc1e1ffc130aead13aa199b62448b178c_52_$0th = `${Tc1e1ffc130aead13aa199b62448b178c_52_$1th}${Tc1e1ffc130aead13aa199b62448b178c_52_$4}${Tc1e1ffc130aead13aa199b62448b178c_52_$3th}\\\\\\|\{ ϮϮ${`Ϯ` | ''}<4>${Tc1e1ffc130aead13aa199b62448b178c_52_$5th})`;
+type Tc1e1ffc130aead13aa199b62448b178c_52_$0th = `${Tc1e1ffc130aead13aa199b62448b178c_52_$1th}${Tc1e1ffc130aead13aa199b62448b178c_52_$4}${Tc1e1ffc130aead13aa199b62448b178c_52_$3th}\\\\\\|\{ ${`(` | ''}<4>${Tc1e1ffc130aead13aa199b62448b178c_52_$5th})`;
 type Tc1e1ffc130aead13aa199b62448b178c_52_$1th = `${Tc1e1ffc130aead13aa199b62448b178c_52_$2nd | ''}`;
 type Tc1e1ffc130aead13aa199b62448b178c_52_$2nd = ``;
 type Tc1e1ffc130aead13aa199b62448b178c_52_$4 = `nonamϭϰe` | ` `;
@@ -216,14 +216,20 @@ type Tc1e1ffc130aead13aa199b62448b178c_56_$2 = undefined & `ababa${string}`;
 type Tc1e1ffc130aead13aa199b62448b178c_56_$3 = `jaja`;
 type Uc1e1ffc130aead13aa199b62448b178c_56_1 = `${Tc1e1ffc130aead13aa199b62448b178c_56_$1}`;
 
-type Tc1e1ffc130aead13aa199b62448b178c_57_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_57_name}${Uc1e1ffc130aead13aa199b62448b178c_57_1}${Tc1e1ffc130aead13aa199b62448b178c_57_$2}${Uc1e1ffc130aead13aa199b62448b178c_57_2 | ''}${Tc1e1ffc130aead13aa199b62448b178c_57_name1}${Uc1e1ffc130aead13aa199b62448b178c_57_3}${Tc1e1ffc130aead13aa199b62448b178c_57_$4}${''}`;
-type Tc1e1ffc130aead13aa199b62448b178c_57_name = `n`;
-type Tc1e1ffc130aead13aa199b62448b178c_57_$2 = `2`;
-type Tc1e1ffc130aead13aa199b62448b178c_57_name1 = `n1`;
-type Tc1e1ffc130aead13aa199b62448b178c_57_$4 = `4`;
-type Uc1e1ffc130aead13aa199b62448b178c_57_1 = `just 1`;
-type Uc1e1ffc130aead13aa199b62448b178c_57_2 = `just 2`;
-type Uc1e1ffc130aead13aa199b62448b178c_57_3 = `just 3`;
+type Tc1e1ffc130aead13aa199b62448b178c_57_$0 = `${Uc1e1ffc130aead13aa199b62448b178c_57_1}${string}${Tc1e1ffc130aead13aa199b62448b178c_57_$3} `;
+type Tc1e1ffc130aead13aa199b62448b178c_57_$1 = `${''} `;
+type Tc1e1ffc130aead13aa199b62448b178c_57_$2 = undefined & `ababa${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_57_$3 = `job`;
+type Uc1e1ffc130aead13aa199b62448b178c_57_1 = `${Tc1e1ffc130aead13aa199b62448b178c_57_$1}`;
+
+type Tc1e1ffc130aead13aa199b62448b178c_58_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_58_name}${Uc1e1ffc130aead13aa199b62448b178c_58_1}${Tc1e1ffc130aead13aa199b62448b178c_58_$2}${Uc1e1ffc130aead13aa199b62448b178c_58_2 | ''}${Tc1e1ffc130aead13aa199b62448b178c_58_name1}${Uc1e1ffc130aead13aa199b62448b178c_58_3}${Tc1e1ffc130aead13aa199b62448b178c_58_$4}${''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_58_name = `n`;
+type Tc1e1ffc130aead13aa199b62448b178c_58_$2 = `2`;
+type Tc1e1ffc130aead13aa199b62448b178c_58_name1 = `n1`;
+type Tc1e1ffc130aead13aa199b62448b178c_58_$4 = `4`;
+type Uc1e1ffc130aead13aa199b62448b178c_58_1 = `just 1`;
+type Uc1e1ffc130aead13aa199b62448b178c_58_2 = `just 2`;
+type Uc1e1ffc130aead13aa199b62448b178c_58_3 = `just 3`;
 
 
 interface _GlobalScopedNamedRegExpMakerGeneratedTypes
@@ -612,11 +618,19 @@ interface _GlobalScopedNamedRegExpMakerGeneratedTypes
       $3: Tc1e1ffc130aead13aa199b62448b178c_56_$3}
   >,
   Record<
-    `/(?<name>n)(?:just 1)(2)(?im-s:just 2)?(?<name1>n1)(?<=just 3)(4)(?<!just 4)/i`,
+    `/(?:((?!(ababa+?)) ))[|](job) /`,
     {
       $0: Tc1e1ffc130aead13aa199b62448b178c_57_$0;
-      name: Tc1e1ffc130aead13aa199b62448b178c_57_name;
-      $2: Tc1e1ffc130aead13aa199b62448b178c_57_$2;
-      name1: Tc1e1ffc130aead13aa199b62448b178c_57_name1;
-      $4: Tc1e1ffc130aead13aa199b62448b178c_57_$4}
+      $1: Tc1e1ffc130aead13aa199b62448b178c_57_$1;
+      $2?: Tc1e1ffc130aead13aa199b62448b178c_57_$2;
+      $3: Tc1e1ffc130aead13aa199b62448b178c_57_$3}
+  >,
+  Record<
+    `/(?<name>n)(?:just 1)(2)(?im-s:just 2)?(?<name1>n1)(?<=just 3)(4)(?<!just 4)/i`,
+    {
+      $0: Tc1e1ffc130aead13aa199b62448b178c_58_$0;
+      name: Tc1e1ffc130aead13aa199b62448b178c_58_name;
+      $2: Tc1e1ffc130aead13aa199b62448b178c_58_$2;
+      name1: Tc1e1ffc130aead13aa199b62448b178c_58_name1;
+      $4: Tc1e1ffc130aead13aa199b62448b178c_58_$4}
   > {' ': ''}

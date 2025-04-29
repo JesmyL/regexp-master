@@ -115,7 +115,8 @@ getValue<string | undefined>(
   ).transform(arg).verseSeparator,
 );
 
-getValue<never | undefined>(makeNamedRegExp('/(?:((?!(ababa+?)) ))(jaja) /').transform(arg).$2);
+getValue<{ $2?: never }>(makeNamedRegExp('/(?:((?!(ababa+?)) ))(jaja) /').transform(arg));
+getValue<{ $3: 'job' }>(makeNamedRegExp('/(?:((?!(ababa+?)) ))[|](job) /').transform(arg));
 
 getKeys<'name' | '$2' | 'name1' | '$4'>(
   makeNamedRegExp('/(?<name>n)(?:just 1)(2)(?im-s:just 2)?(?<name1>n1)(?<=just 3)(4)(?<!just 4)/i').transform(arg),

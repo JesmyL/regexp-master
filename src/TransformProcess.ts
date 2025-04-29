@@ -1,3 +1,4 @@
+import { makeNamedRegExp } from './makeNamedRegExp';
 import { makeRegExp } from './makeRegExp';
 import { GroupInfo, GroupName, GroupStubSymbol, StubSymbol } from './types';
 
@@ -54,14 +55,18 @@ export class TransformProcess {
 
       regStr = this.replaceSlashedParenthesis(regStr);
       regStr = this.replaceStringTemplateInserts(regStr);
-      regStr = this.replaceSlashedOrSign(regStr);
 
       const regReplacedStringTemplateInserts = regStr;
 
       regStr = this.replaceStubs(regStr);
       regStr = this.insertGroupsWithReplace(regStr, groups, groupStubSymbols, groupSymbolsDict, symbolGroupsDict);
 
-      const isEachGroupIsOptional = regStr.includes('|');
+      const isEachGroupIsOptional = regStr
+        .replace(
+          makeRegExp(`/\\[([^${this.stringStubSymbol}]+?)\\](${this.quantifierRegStr}|)/g`),
+          this.stringStubSymbol,
+        )
+        .includes('|');
       const groupSymbols = Object.values(groupSymbolsDict);
 
       const groupIndexes = Object.keys(groups).map(Number).sort(this.sortGroupIndexes);
@@ -197,8 +202,6 @@ export class TransformProcess {
         }
       });
 
-      // console.log(JSON.stringify(wholeGroupSymbolToInfoDict, null, 2));
-
       recordTypes.push(
         `Record<\n    ${this.makeRegTypeKey(
           regReplacedStringTemplateInserts,
@@ -228,13 +231,13 @@ export class TransformProcess {
   makeRegTypeKey = (regStr: string, regFlags: string) => {
     return `\`/${
       regStr
-        .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
         .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '\\\\|')
         .replace(makeRegExp(`/${this.dotStubSymbol}{3}/g`), '\\\\.')
         .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '\\\\(')
         .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), '\\\\)')
         .replace(makeRegExp(`/${this.openSquareBracketStubSymbol}{3}/g`), '\\\\[')
         .replace(makeRegExp(`/${this.closeSquareBracketStubSymbol}{3}/g`), '\\\\]')
+        .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
       //
     }/${regFlags}\``;
   };
@@ -291,12 +294,15 @@ export class TransformProcess {
 
     const contentWithUnions = `\`${
       content
-        .split('|')
-        .join('` | `')
+        .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '(')
+        .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), ')')
+        .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
+        .replace(makeRegExp(`/${this.slashStubSymbol}/g`), '\\')
+        .replace(makeRegExp(`/${this.dotStubSymbol}/g`), '.')
         .replace(
           makeRegExp(`/(?:(\\\\*)\\[(?:\\d[-\\d]*\\d)?]|(\\\\{1,})d)(${this.quantifierRegStr}|)/g`),
           (all, slashes: string | undefined, slashes1: string | undefined, quantifier: string | undefined) => {
-            const optionalSign = this.checkIsOptionalQuantifier(quantifier) ? " | ''" : '';
+            const optionalSign = this.checkIsOptionalQuantifier(quantifier) ? ` ${this.unionStubSymbol} ''` : '';
 
             if (slashes1 !== undefined) {
               return this.checkIsSlashedSymbol(slashes1) ? `\${number${optionalSign}}` : all;
@@ -305,11 +311,11 @@ export class TransformProcess {
             return this.checkIsSlashedSymbol(slashes) ? all : `\${number${optionalSign}}`;
           },
         )
-        .replace(makeRegExp(`/\\[(?:[^\\]]*?\\]?[^\\]]*)*?\\](${this.quantifierRegStr}|)/g`), () => {
+        .replace(makeRegExp(`/\\[((?:\\]|.)+)\\](${this.quantifierRegStr}|)/g`), () => {
           return '${string}';
         })
         .replace(makeRegExp(`/((?:\\\\\\\\)?[^\\\`])(${this.quantifierRegStr})/g`), (all, char, quantifier) =>
-          this.checkIsOptionalQuantifier(quantifier) ? `\${\`${char}\` | ''}` : all,
+          this.checkIsOptionalQuantifier(quantifier) ? `\${\`${char}\` ${this.unionStubSymbol} ''}` : all,
         )
         .replace(makeRegExp(`/(?:(\\\\+)[ws]|\\.)(${this.quantifierRegStr}|)/g`), (all, slashes) => {
           return slashes === undefined ? '${string}' : this.checkIsSlashedSymbol(slashes) ? '${string}' : all;
@@ -317,15 +323,12 @@ export class TransformProcess {
         .replace(makeRegExp(`/([^\\\\])(${this.quantifierRegStr})/g`), (_all, char, quantifier) =>
           this.checkIsOptionalQuantifier(quantifier) ? '${string}' : `${char}\${string}`,
         )
-        .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '|')
-        .replace(makeRegExp(`/${this.unionStubSymbol}/g`), '|')
-        .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '(')
-        .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), ')')
         .replace(makeRegExp(`/${this.openSquareBracketStubSymbol}{3}/g`), '[')
         .replace(makeRegExp(`/${this.closeSquareBracketStubSymbol}{3}/g`), ']')
-        .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
-        .replace(makeRegExp(`/${this.slashStubSymbol}/g`), '\\')
-        .replace(makeRegExp(`/${this.dotStubSymbol}/g`), '.')
+        .split('|')
+        .join('` | `')
+        .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '|')
+        .replace(makeRegExp(`/${this.unionStubSymbol}/g`), '|')
       // .replace(/`\${string}`/g, 'string')
       //
     }\``;
@@ -410,15 +413,8 @@ export class TransformProcess {
       return this.checkIsSlashedSymbol(slashes, 2) ? all : `${slashes.slice(2)}${this.stringStubSymbol}`;
     });
 
-  replaceSlashedOrSign = (regStr: string) => {
-    return regStr.replace(/(\\+?)\|/g, (all, slashes: string) => {
-      return this.checkIsSlashedSymbol(slashes) ? `${slashes.slice(2)}${this.unionStubSymbol.repeat(3)}` : all;
-    });
-  };
-
   someOfGroupParents = (groupInfo: GroupInfo, someCb: (groupInfo: GroupInfo) => boolean) => {
     while (groupInfo.parent !== null) {
-      // console.log('SOME', groupInfo.groupName);
       if (someCb(groupInfo)) return true;
       groupInfo = groupInfo.parent;
     }
@@ -427,23 +423,26 @@ export class TransformProcess {
   };
 
   replaceSlashedParenthesis = (regStr: string) => {
-    return regStr.replace(
-      /(\\+?)\(|(\\+?)\)/g,
-      (all, openSlashes: string | undefined, closeSlashes: string | undefined) => {
-        if (openSlashes !== undefined) {
-          return this.checkIsSlashedSymbol(openSlashes)
-            ? `${openSlashes.slice(2)}${this.openParenthesisStubSymbol.repeat(3)}`
-            : all;
-        }
+    return (
+      regStr
+        // .replace(makeRegExp(`/\\[((?:\\]|.)+)\\](${this.quantifierRegStr}|)/g`), () => {
+        //   return this.stringStubSymbol;
+        // })
+        .replace(/(\\+?)\(|(\\+?)\)/g, (all, openSlashes: string | undefined, closeSlashes: string | undefined) => {
+          if (openSlashes !== undefined) {
+            return this.checkIsSlashedSymbol(openSlashes)
+              ? `${openSlashes.slice(2)}${this.openParenthesisStubSymbol.repeat(3)}`
+              : all;
+          }
 
-        if (closeSlashes !== undefined) {
-          return this.checkIsSlashedSymbol(closeSlashes)
-            ? `${closeSlashes.slice(2)}${this.closeParenthesisStubSymbol.repeat(3)}`
-            : all;
-        }
+          if (closeSlashes !== undefined) {
+            return this.checkIsSlashedSymbol(closeSlashes)
+              ? `${closeSlashes.slice(2)}${this.closeParenthesisStubSymbol.repeat(3)}`
+              : all;
+          }
 
-        return all;
-      },
+          return all;
+        })
     );
   };
 
@@ -480,6 +479,15 @@ export class TransformProcess {
       .replace(/\\{4}/g, this.slashStubSymbol.repeat(2))
       .replace(/\\{2}\./g, this.dotStubSymbol.repeat(3))
       .replace(/\\{2}\[/g, this.openSquareBracketStubSymbol.repeat(3))
-      .replace(/\\{2}\]/g, this.closeSquareBracketStubSymbol.repeat(3));
+      .replace(/\\{2}\]/g, this.closeSquareBracketStubSymbol.repeat(3))
+      .replace(/(\\+?)\|/g, (all, slashes: string) => {
+        return this.checkIsSlashedSymbol(slashes) ? `${slashes.slice(2)}${this.unionStubSymbol.repeat(3)}` : all;
+      });
   };
+}
+
+if (0) {
+  const { regExp, transform } = makeNamedRegExp('/()(?<a>)[|](888) {}/');
+  const match = '|888 {}'.match(regExp);
+  console.log(match && transform(match));
 }

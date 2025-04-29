@@ -1,8 +1,10 @@
-import { TransformProcess } from './TransformProcess';
+import { makeRegExp } from './makeRegExp';
 import { StrRegExp } from './model';
+import { TransformProcess } from './TransformProcess';
 
 const numbersSet = new Set(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']);
-const findNamedGroupsReg = /(\\*)\((?:\?<([\w$_]+)>|\?<()>)?/g;
+const groupKeysStr = '=!<:ims';
+const findNamedGroupsReg = makeRegExp(`/(\\\\*)\\((?:\\?(?:<([\\w$_]+)>|<()>|([${groupKeysStr}])))?/g`);
 
 export const prepareNameMakedRegExp = (reg: StrRegExp, errorsStore?: string[]) => {
   let openPosition = 0;
@@ -17,10 +19,12 @@ export const prepareNameMakedRegExp = (reg: StrRegExp, errorsStore?: string[]) =
       slashes: string,
       name: string | undefined,
       emptyName: string | undefined,
+      key: string | undefined,
       index: number,
       restContent: string,
     ) => {
       if (TransformProcess.checkIsSlashedSymbol(slashes)) return all;
+      if (key !== undefined && key.match(makeRegExp(`/^[${groupKeysStr}]/`))) return all;
 
       openPosition++;
       positions.push(openPosition);

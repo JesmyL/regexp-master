@@ -7,9 +7,9 @@
   "types": "./build/model.d.ts",
   "exports": {
     ".": {
-      "import": "./build/regexp-master.js",
+      "types": "./build/model.d.ts",
       "require": "./build/regexp-master.umd.cjs",
-      "types": "./build/model.d.ts"
+      "import": "./build/regexp-master.js"
     }
   },
   "files": [
