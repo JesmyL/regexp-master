@@ -2,7 +2,7 @@ type Tc1e1ffc130aead13aa199b62448b178c_1_$0 = `${Tc1e1ffc130aead13aa199b62448b17
 type Tc1e1ffc130aead13aa199b62448b178c_1_str = `${string}`;
 
 type Tc1e1ffc130aead13aa199b62448b178c_2_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_2_str}`;
-type Tc1e1ffc130aead13aa199b62448b178c_2_str = `${string | ''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_2_str = `${`${string}` | ''}`;
 
 type Tc1e1ffc130aead13aa199b62448b178c_3_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_3_str}`;
 type Tc1e1ffc130aead13aa199b62448b178c_3_str = `${`a` | ''}`;
@@ -151,24 +151,24 @@ type Tc1e1ffc130aead13aa199b62448b178c_49_opt = ``;
 type Tc1e1ffc130aead13aa199b62448b178c_49_opt1 = ``;
 
 type Tc1e1ffc130aead13aa199b62448b178c_50_$0 = `\\${Tc1e1ffc130aead13aa199b62448b178c_50_str}${Tc1e1ffc130aead13aa199b62448b178c_50_$2 | ''}${Tc1e1ffc130aead13aa199b62448b178c_50_$3}`;
-type Tc1e1ffc130aead13aa199b62448b178c_50_str = `${string}\${`;
+type Tc1e1ffc130aead13aa199b62448b178c_50_str = `${string}{`;
 type Tc1e1ffc130aead13aa199b62448b178c_50_$2 = `\\ ${number}${string}`;
 type Tc1e1ffc130aead13aa199b62448b178c_50_$3 = `${Tc1e1ffc130aead13aa199b62448b178c_50_$4 | ''}` | `${Tc1e1ffc130aead13aa199b62448b178c_50_$5 | ''}`;
-type Tc1e1ffc130aead13aa199b62448b178c_50_$4 = `${number}{3,\${txt}${string}`;
-type Tc1e1ffc130aead13aa199b62448b178c_50_$5 = `\\\${txt}\\\${txt1}\\\\\${txt2}\\\\\${txt3}${string}` | `${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_50_$4 = `${number}{3,{txt}${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_50_$5 = `\{txt}\\{txt1}\\\{txt2}\\\\{txt3}${string}` | `${string}`;
 
-type Tc1e1ffc130aead13aa199b62448b178c_51_$0 = `${`\\(` | ''}<!>${string}\${)${Tc1e1ffc130aead13aa199b62448b178c_51_$1 | ''}${string}${Tc1e1ffc130aead13aa199b62448b178c_51_$2 | ''}${Tc1e1ffc130aead13aa199b62448b178c_51_name1 | ''}` | `${Tc1e1ffc130aead13aa199b62448b178c_51_opt2 | ''}` | `)${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_51_$0 = `\\ϬϬ${`Ϭ` | ''}<!>${string}{)${Tc1e1ffc130aead13aa199b62448b178c_51_$1 | ''}${string}${Tc1e1ffc130aead13aa199b62448b178c_51_$2 | ''}${Tc1e1ffc130aead13aa199b62448b178c_51_name1 | ''}` | `${Tc1e1ffc130aead13aa199b62448b178c_51_opt2 | ''}` | `)${string}`;
 type Tc1e1ffc130aead13aa199b62448b178c_51_$1 = `${string}\\ ${number}${string}`;
 type Tc1e1ffc130aead13aa199b62448b178c_51_$2 = `${Tc1e1ffc130aead13aa199b62448b178c_51_$3 | ''}` | `${Tc1e1ffc130aead13aa199b62448b178c_51_$4 | ''}`;
-type Tc1e1ffc130aead13aa199b62448b178c_51_$3 = `${number}{3,\${txt}\\\\${string}`;
-type Tc1e1ffc130aead13aa199b62448b178c_51_$4 = `\${str}` | string | `${Tc1e1ffc130aead13aa199b62448b178c_51_name | ''}${number}`;
+type Tc1e1ffc130aead13aa199b62448b178c_51_$3 = `${number}{3,{txt}\\\\${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_51_$4 = `{str}` | `${string}` | `${Tc1e1ffc130aead13aa199b62448b178c_51_name | ''}${number}`;
 type Tc1e1ffc130aead13aa199b62448b178c_51_name = ``;
 type Tc1e1ffc130aead13aa199b62448b178c_51_name1 = `${Tc1e1ffc130aead13aa199b62448b178c_51_opt1 | ''} `;
 type Tc1e1ffc130aead13aa199b62448b178c_51_opt1 = ` \\\\( (`;
 type Tc1e1ffc130aead13aa199b62448b178c_51_opt2 = ` `;
 
 type Tc1e1ffc130aead13aa199b62448b178c_52_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_52_$0th} ${string}in zero`;
-type Tc1e1ffc130aead13aa199b62448b178c_52_$0th = `${Tc1e1ffc130aead13aa199b62448b178c_52_$1th}${Tc1e1ffc130aead13aa199b62448b178c_52_$4}${Tc1e1ffc130aead13aa199b62448b178c_52_$3th}\\\\\\|\\\${ ${`(` | ''}<$4>${Tc1e1ffc130aead13aa199b62448b178c_52_$5th})`;
+type Tc1e1ffc130aead13aa199b62448b178c_52_$0th = `${Tc1e1ffc130aead13aa199b62448b178c_52_$1th}${Tc1e1ffc130aead13aa199b62448b178c_52_$4}${Tc1e1ffc130aead13aa199b62448b178c_52_$3th}\\\\\\|\{ ϮϮ${`Ϯ` | ''}<4>${Tc1e1ffc130aead13aa199b62448b178c_52_$5th})`;
 type Tc1e1ffc130aead13aa199b62448b178c_52_$1th = `${Tc1e1ffc130aead13aa199b62448b178c_52_$2nd | ''}`;
 type Tc1e1ffc130aead13aa199b62448b178c_52_$2nd = ``;
 type Tc1e1ffc130aead13aa199b62448b178c_52_$4 = `nonamϭϰe` | ` `;
@@ -183,6 +183,47 @@ type Tc1e1ffc130aead13aa199b62448b178c_52_$11 = ``;
 type Tc1e1ffc130aead13aa199b62448b178c_53_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_53_$0th}${Tc1e1ffc130aead13aa199b62448b178c_53_$2}`;
 type Tc1e1ffc130aead13aa199b62448b178c_53_$0th = ` ` | `sds `;
 type Tc1e1ffc130aead13aa199b62448b178c_53_$2 = `noname` | ``;
+
+type Tc1e1ffc130aead13aa199b62448b178c_54_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_54_before}${Tc1e1ffc130aead13aa199b62448b178c_54_beforeSpaces}${Tc1e1ffc130aead13aa199b62448b178c_54_hashes}${Tc1e1ffc130aead13aa199b62448b178c_54_blockHashPosition}${Tc1e1ffc130aead13aa199b62448b178c_54_associations | ''}${` ` | ''}${Tc1e1ffc130aead13aa199b62448b178c_54_info | ''}${Tc1e1ffc130aead13aa199b62448b178c_54_beforeCommentSpaces}${Tc1e1ffc130aead13aa199b62448b178c_54_comment}${Uc1e1ffc130aead13aa199b62448b178c_54_1}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_before = `` | `\\n`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_beforeSpaces = `${` ` | ''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_hashes = `#${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_blockHashPosition = `${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_associations = `${`_` | ''}${Tc1e1ffc130aead13aa199b62448b178c_54_secretWidStr | ''}${Tc1e1ffc130aead13aa199b62448b178c_54_modificators | ''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_secretWidStr = `${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_modificators = `${`!` | ''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_info = `[${Tc1e1ffc130aead13aa199b62448b178c_54_blockHeader | ''}]`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_blockHeader = `${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_beforeCommentSpaces = `${` ` | ''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_54_comment = `${string}`;
+type Uc1e1ffc130aead13aa199b62448b178c_54_1 = `\\n${` ` | ''}#` | ``;
+
+type Tc1e1ffc130aead13aa199b62448b178c_55_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_55_bookn}${`${string}` | ''}${Tc1e1ffc130aead13aa199b62448b178c_55_$4 | ''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_bookn = `${number | ''}${''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_$2 = undefined & `${`${string}` | ''}${Tc1e1ffc130aead13aa199b62448b178c_55_$3}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_$3 = undefined & `${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_$4 = `${Tc1e1ffc130aead13aa199b62448b178c_55_chapterStr | ''}${Tc1e1ffc130aead13aa199b62448b178c_55_$6 | ''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_chapterStr = `${number}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_$6 = `${Tc1e1ffc130aead13aa199b62448b178c_55_$7 | ''}${Tc1e1ffc130aead13aa199b62448b178c_55_verseStr | ''}${Tc1e1ffc130aead13aa199b62448b178c_55_$9 | ''}${''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_$7 = `:` | `${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_verseStr = `${''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_$9 = `${`${string}` | ''}${Tc1e1ffc130aead13aa199b62448b178c_55_verseSeparator | ''}${`${string}` | ''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_55_verseSeparator = `${string}`;
+
+type Tc1e1ffc130aead13aa199b62448b178c_56_$0 = `${Uc1e1ffc130aead13aa199b62448b178c_56_1}${Tc1e1ffc130aead13aa199b62448b178c_56_$3} `;
+type Tc1e1ffc130aead13aa199b62448b178c_56_$1 = `${''} `;
+type Tc1e1ffc130aead13aa199b62448b178c_56_$2 = undefined & `ababa${string}`;
+type Tc1e1ffc130aead13aa199b62448b178c_56_$3 = `jaja`;
+type Uc1e1ffc130aead13aa199b62448b178c_56_1 = `${Tc1e1ffc130aead13aa199b62448b178c_56_$1}`;
+
+type Tc1e1ffc130aead13aa199b62448b178c_57_$0 = `${Tc1e1ffc130aead13aa199b62448b178c_57_name}${Uc1e1ffc130aead13aa199b62448b178c_57_1}${Tc1e1ffc130aead13aa199b62448b178c_57_$2}${Uc1e1ffc130aead13aa199b62448b178c_57_2 | ''}${Tc1e1ffc130aead13aa199b62448b178c_57_name1}${Uc1e1ffc130aead13aa199b62448b178c_57_3}${Tc1e1ffc130aead13aa199b62448b178c_57_$4}${''}`;
+type Tc1e1ffc130aead13aa199b62448b178c_57_name = `n`;
+type Tc1e1ffc130aead13aa199b62448b178c_57_$2 = `2`;
+type Tc1e1ffc130aead13aa199b62448b178c_57_name1 = `n1`;
+type Tc1e1ffc130aead13aa199b62448b178c_57_$4 = `4`;
+type Uc1e1ffc130aead13aa199b62448b178c_57_1 = `just 1`;
+type Uc1e1ffc130aead13aa199b62448b178c_57_2 = `just 2`;
+type Uc1e1ffc130aead13aa199b62448b178c_57_3 = `just 3`;
 
 
 interface _GlobalScopedNamedRegExpMakerGeneratedTypes
@@ -530,4 +571,52 @@ interface _GlobalScopedNamedRegExpMakerGeneratedTypes
       $0: Tc1e1ffc130aead13aa199b62448b178c_53_$0;
       $0th: Tc1e1ffc130aead13aa199b62448b178c_53_$0th;
       $2: Tc1e1ffc130aead13aa199b62448b178c_53_$2}
+  >,
+  Record<
+    `/(?<before>^|\\n)(?<beforeSpaces> *)(?<hashes>#{1,2})(?<blockHashPosition>${string})(?<associations>_?(?<secretWidStr>[${string}]*)(?<modificators>!?))? *(?<info>\\[(?<blockHeader>.+?)\\])?(?<beforeCommentSpaces> *)(?<comment>[\\w\\W]+?)(?=\\n *#|$)/g`,
+    {
+      $0: Tc1e1ffc130aead13aa199b62448b178c_54_$0;
+      before: Tc1e1ffc130aead13aa199b62448b178c_54_before;
+      beforeSpaces: Tc1e1ffc130aead13aa199b62448b178c_54_beforeSpaces;
+      hashes: Tc1e1ffc130aead13aa199b62448b178c_54_hashes;
+      blockHashPosition: Tc1e1ffc130aead13aa199b62448b178c_54_blockHashPosition;
+      associations?: Tc1e1ffc130aead13aa199b62448b178c_54_associations;
+      secretWidStr?: Tc1e1ffc130aead13aa199b62448b178c_54_secretWidStr;
+      modificators?: Tc1e1ffc130aead13aa199b62448b178c_54_modificators;
+      info?: Tc1e1ffc130aead13aa199b62448b178c_54_info;
+      blockHeader?: Tc1e1ffc130aead13aa199b62448b178c_54_blockHeader;
+      beforeCommentSpaces: Tc1e1ffc130aead13aa199b62448b178c_54_beforeCommentSpaces;
+      comment: Tc1e1ffc130aead13aa199b62448b178c_54_comment}
+  >,
+  Record<
+    `/(?<bookn>\\d?(?!(\\s*([а-яё]+))))\\s*((?<chapterStr>\\d{1,3})((:|\\s+)(?<verseStr>(?!\\d{1,3}))(\\s*(?<verseSeparator>[-,]?)\\s*)(?<!finishVerseStr>\\d{1,3})?)?)?/i`,
+    {
+      $0: Tc1e1ffc130aead13aa199b62448b178c_55_$0;
+      bookn: Tc1e1ffc130aead13aa199b62448b178c_55_bookn;
+      $2?: Tc1e1ffc130aead13aa199b62448b178c_55_$2;
+      $3?: Tc1e1ffc130aead13aa199b62448b178c_55_$3;
+      $4?: Tc1e1ffc130aead13aa199b62448b178c_55_$4;
+      chapterStr?: Tc1e1ffc130aead13aa199b62448b178c_55_chapterStr;
+      $6?: Tc1e1ffc130aead13aa199b62448b178c_55_$6;
+      $7?: Tc1e1ffc130aead13aa199b62448b178c_55_$7;
+      verseStr?: Tc1e1ffc130aead13aa199b62448b178c_55_verseStr;
+      $9?: Tc1e1ffc130aead13aa199b62448b178c_55_$9;
+      verseSeparator?: Tc1e1ffc130aead13aa199b62448b178c_55_verseSeparator}
+  >,
+  Record<
+    `/(?:((?!(ababa+?)) ))(jaja) /`,
+    {
+      $0: Tc1e1ffc130aead13aa199b62448b178c_56_$0;
+      $1: Tc1e1ffc130aead13aa199b62448b178c_56_$1;
+      $2?: Tc1e1ffc130aead13aa199b62448b178c_56_$2;
+      $3: Tc1e1ffc130aead13aa199b62448b178c_56_$3}
+  >,
+  Record<
+    `/(?<name>n)(?:just 1)(2)(?im-s:just 2)?(?<name1>n1)(?<=just 3)(4)(?<!just 4)/i`,
+    {
+      $0: Tc1e1ffc130aead13aa199b62448b178c_57_$0;
+      name: Tc1e1ffc130aead13aa199b62448b178c_57_name;
+      $2: Tc1e1ffc130aead13aa199b62448b178c_57_$2;
+      name1: Tc1e1ffc130aead13aa199b62448b178c_57_name1;
+      $4: Tc1e1ffc130aead13aa199b62448b178c_57_$4}
   > {' ': ''}

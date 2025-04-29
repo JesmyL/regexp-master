@@ -1,14 +1,5 @@
 import { makeRegExp } from './makeRegExp';
-import {
-  CloseParenthesisStubSymbol,
-  GroupInfo,
-  GroupName,
-  GroupStubSymbol,
-  OpenParenthesisStubSymbol,
-  SlashStubSymbol,
-  StringStubSymbol,
-  UnionStubSymbol,
-} from './types';
+import { GroupInfo, GroupName, GroupStubSymbol, StubSymbol } from './types';
 
 export class TransformProcess {
   makerInvokesContentSplitterRegExp: RegExp;
@@ -16,11 +7,14 @@ export class TransformProcess {
   bracketsSet = new Set(['`', '"', "'"]);
   fileMD5: string;
 
-  stringStubSymbol = StringStubSymbol.def;
-  slashStubSymbol = SlashStubSymbol.def;
-  unionStubSymbol = UnionStubSymbol.def;
-  openParenthesisStubSymbol = OpenParenthesisStubSymbol.def;
-  closeParenthesisStubSymbol = CloseParenthesisStubSymbol.def;
+  stringStubSymbol = StubSymbol.def;
+  dotStubSymbol = StubSymbol.def;
+  slashStubSymbol = StubSymbol.def;
+  unionStubSymbol = StubSymbol.def;
+  openParenthesisStubSymbol = StubSymbol.def;
+  closeParenthesisStubSymbol = StubSymbol.def;
+  closeSquareBracketStubSymbol = StubSymbol.def;
+  openSquareBracketStubSymbol = StubSymbol.def;
 
   constructor(options: { importNameMatch: RegExpMatchArray; content: string; fileMD5: string }) {
     this.fileMD5 = options.fileMD5;
@@ -64,42 +58,49 @@ export class TransformProcess {
 
       const regReplacedStringTemplateInserts = regStr;
 
-      regStr = this.replaceSlashes(regStr);
+      regStr = this.replaceStubs(regStr);
       regStr = this.insertGroupsWithReplace(regStr, groups, groupStubSymbols, groupSymbolsDict, symbolGroupsDict);
 
       const isEachGroupIsOptional = regStr.includes('|');
+      const groupSymbols = Object.values(groupSymbolsDict);
 
       const groupIndexes = Object.keys(groups).map(Number).sort(this.sortGroupIndexes);
+      const uncountableGroupSymbolToInfoDict: Partial<Record<GroupStubSymbol, GroupInfo>> = {};
+
       const groupSymbolToInfoDict: Record<GroupStubSymbol, GroupInfo> = {
         [GroupStubSymbol.zero]: {
-          groupName: '$0' as never,
-          groupContent: regStr,
-          groupStr: regStr,
+          groupName: GroupName.zero,
           groupSymbol: GroupStubSymbol.zero,
-          index: -1,
+          groupStr: regStr,
+          groupContent: regStr,
+          groupKey: '',
           isOpt: false,
           isOptChildren: isEachGroupIsOptional,
+          isHasSubTypes: this.checkIsHasSubTypes(regStr, groupSymbols),
+          isCountable: true,
+          parent: null,
+          isNever: false,
         },
       };
+      let countableGroupi = 0;
+      let uncountableGroupi = 0;
 
-      for (const groupIndexi in groupIndexes) {
-        const groupIndex = groupIndexes[groupIndexi];
+      for (const groupIndex of groupIndexes) {
         const groupStr = groups[groupIndex];
-        const groupNameMatch = groupStr.match(/\((?:\?<([^>]*?)>)?/);
+        const groupNameMatch = groupStr.match(/\((\?(?:<[!=]|<([^>]*?)>|))?/);
 
         if (groupNameMatch === null) throw 'Incorrect RegExp group';
-        const groupName = groupNameMatch[1] as GroupName | undefined;
-        const isNoname = groupName === undefined;
+        const matchedGroupName = groupNameMatch[2] as GroupName | undefined;
+        const isNoname = matchedGroupName === undefined;
 
         if (!isNoname) {
-          if (groupName === '') throw 'Group name can not be empty - <>';
-          if (groupName.match(/^\d|[^$_\w]/)) throw `Incorrect group name - <${groupName}>`;
+          if (matchedGroupName === GroupName.empty) throw 'Group name can not be empty - <>';
+          if (matchedGroupName.match(/^\d|[^$_\w]/)) throw `Incorrect group name - <${matchedGroupName}>`;
         }
 
         const groupSymbol = groupSymbolsDict[groupIndex];
-        const groupContent = groupStr.slice(isNoname ? 1 : groupName.length + 4, groupStr.lastIndexOf(')'));
 
-        const isOptChildren = !isEachGroupIsOptional && groupContent.includes('|');
+        const isUncountable = isNoname && groupNameMatch[1] !== undefined;
 
         const isOpt =
           isEachGroupIsOptional ||
@@ -109,33 +110,94 @@ export class TransformProcess {
             return isOpt || isOptChildren;
           });
 
+        if (isUncountable) {
+          const { groupContent, groupKey } = this.extractGroupKeyAndContent(groupStr);
+          const groupName = `${++uncountableGroupi}` as GroupName;
+
+          uncountableGroupSymbolToInfoDict[groupSymbol] = {
+            groupContent,
+            groupKey,
+            groupName,
+            groupStr,
+            groupSymbol,
+            isHasSubTypes: false,
+            isOpt,
+            isOptChildren: groupKey.includes('!'),
+            isCountable: false,
+            parent: null,
+            isNever: false,
+          };
+
+          continue;
+        }
+
+        const groupContent = groupStr.slice(isNoname ? 1 : matchedGroupName.length + 4, groupStr.lastIndexOf(')'));
+        const isOptChildren = !isEachGroupIsOptional && groupContent.includes('|');
+
+        countableGroupi++;
+        const groupName = matchedGroupName ?? (`$${countableGroupi}` as GroupName);
+
         groupSymbolToInfoDict[groupSymbol] = {
           isOpt,
           isOptChildren,
-          index: groupIndex,
           groupStr,
           groupSymbol: groupSymbolsDict[groupIndex],
-          groupName: groupName ?? (`$${+groupIndexi + 1}` as GroupName),
+          groupName,
           groupContent,
+          groupKey: '',
+          isHasSubTypes: this.checkIsHasSubTypes(groupStr, groupSymbols),
+          isCountable: true,
+          parent: null,
+          isNever: false,
         };
       }
 
-      const groupPartTypes: Record<GroupName, string> = {} as never;
+      const groupTypeParts: string[] = [];
+      const groupTypeContentsDict = {} as Record<GroupName, string>;
+      const uncountableGroupPartTypes: string[] = [];
       const recordFieldsTypes: string[] = [];
+      const wholeGroupSymbolToInfoDict = { ...groupSymbolToInfoDict, ...uncountableGroupSymbolToInfoDict };
 
-      Object.values(groupSymbolToInfoDict).forEach(groupInfo => {
-        if (groupPartTypes[groupInfo.groupName] !== undefined) throw `Inclusive group name - <${groupInfo.groupName}>`;
-        const typeName = this.makeGroupTypeName(userRegStri, groupInfo.groupName);
-        const typeContent = this.makeGroupTypeFromGroupContent(
+      Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
+        if (groupTypeContentsDict[groupInfo.groupName] !== undefined)
+          throw `Inclusive group name - <${groupInfo.groupName}>`;
+        groupTypeContentsDict[groupInfo.groupName] = this.makeGroupTypeFromGroupContent({
           userRegStri,
-          groupSymbolToInfoDict,
+          wholeGroupSymbolToInfoDict,
           groupStubSymbols,
-          groupInfo.groupContent,
-        );
-
-        groupPartTypes[groupInfo.groupName] = `type ${typeName} = ${typeContent};`;
-        recordFieldsTypes.push(`${groupInfo.groupName}${groupInfo.isOpt ? '?' : ''}: ${typeName}`);
+          groupInfo,
+        });
       });
+
+      Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
+        groupInfo.isNever = this.someOfGroupParents(groupInfo, groupInfo => {
+          return groupInfo.groupKey.includes('!');
+        });
+      });
+
+      Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
+        const typeContent = this.makeGroupTypeFromGroupContent({
+          userRegStri,
+          wholeGroupSymbolToInfoDict,
+          groupStubSymbols,
+          groupInfo,
+        });
+
+        if (groupInfo.isCountable) {
+          const typeName = this.makeGroupTypeName(userRegStri, groupInfo.groupName);
+
+          recordFieldsTypes.push(
+            `${groupInfo.groupName}${groupInfo.isOpt || groupInfo.isNever ? '?' : ''}: ${typeName}`,
+          );
+          groupTypeParts.push(`type ${typeName} = ${groupInfo.isNever ? 'undefined & ' : ''}${typeContent};`);
+        } else if (!groupInfo.groupKey.includes('!')) {
+          const typeName = this.makeUncountableGroupTypeName(userRegStri, groupInfo.groupName);
+
+          uncountableGroupPartTypes.push(`type ${typeName} = ${typeContent};`);
+        }
+      });
+
+      // console.log(JSON.stringify(wholeGroupSymbolToInfoDict, null, 2));
 
       recordTypes.push(
         `Record<\n    ${this.makeRegTypeKey(
@@ -143,7 +205,7 @@ export class TransformProcess {
           regFlags,
         )},\n    {\n      ${recordFieldsTypes.join(';\n      ')}}\n  >`,
       );
-      recordPartsTypes.push(Object.values(groupPartTypes).join('\n'));
+      recordPartsTypes.push(groupTypeParts.concat(uncountableGroupPartTypes).join('\n'));
     }
 
     if (!recordTypes.length) return null;
@@ -156,82 +218,131 @@ export class TransformProcess {
   };
 
   makeGroupTypeName = (userRegStri: number, groupName: GroupName) => `T${this.fileMD5}_${userRegStri}_${groupName}`;
+  makeUncountableGroupTypeName = (userRegStri: number, groupName: GroupName) =>
+    `U${this.fileMD5}_${userRegStri}_${groupName}`;
 
-  makeGroupTypeParts = () => {};
-
-  makeRegTypeKey = (regStr: string, regFlags: string) => {
-    return `\`/${regStr
-      .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
-      .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '\\\\|')
-      .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '\\\\(')
-      .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), '\\\\)')}/${regFlags}\``;
+  checkIsHasSubTypes = (regStr: string, groupSymbols: GroupStubSymbol[]) => {
+    return groupSymbols.some(char => regStr.includes(char));
   };
 
-  makeGroupTypeFromGroupContent = (
-    userRegStri: number,
-    groupSymbolToInfoDict: Record<GroupStubSymbol, GroupInfo>,
-    groupSymbols: GroupStubSymbol[],
-    groupContent: string,
-  ) => {
-    if (!groupContent) return '``';
+  makeRegTypeKey = (regStr: string, regFlags: string) => {
+    return `\`/${
+      regStr
+        .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
+        .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '\\\\|')
+        .replace(makeRegExp(`/${this.dotStubSymbol}{3}/g`), '\\\\.')
+        .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '\\\\(')
+        .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), '\\\\)')
+        .replace(makeRegExp(`/${this.openSquareBracketStubSymbol}{3}/g`), '\\\\[')
+        .replace(makeRegExp(`/${this.closeSquareBracketStubSymbol}{3}/g`), '\\\\]')
+      //
+    }/${regFlags}\``;
+  };
 
-    for (const groupSymbol of groupSymbols) {
-      const groupInfo = groupSymbolToInfoDict[groupSymbol];
+  extractGroupKeyAndContent = (groupStr: string) => {
+    const groupParts = groupStr
+      .slice(0, groupStr.lastIndexOf(')'))
+      .match(/^\(\?(<[=!]|[a-z]*(?:-[a-z]*)?:|[:=!]|)(.*)/);
 
-      groupContent = groupContent.replace(
-        makeRegExp(`/${groupSymbol}+/g`),
-        () =>
-          `\${${this.makeGroupTypeName(userRegStri, groupInfo.groupName)}${
-            groupInfo.isOpt ? ` ${this.unionStubSymbol} ''` : ''
-          }}`,
-      );
+    if (groupParts === null)
+      return {
+        groupKey: '',
+        groupContent: '',
+      };
+
+    return {
+      groupKey: groupParts[1],
+      groupContent: groupParts[2],
+    };
+  };
+
+  makeGroupTypeFromGroupContent = ({
+    groupInfo,
+    wholeGroupSymbolToInfoDict,
+    groupStubSymbols,
+    userRegStri,
+  }: {
+    userRegStri: number;
+    wholeGroupSymbolToInfoDict: Record<GroupStubSymbol, GroupInfo>;
+    groupStubSymbols: GroupStubSymbol[];
+    groupInfo: GroupInfo;
+  }) => {
+    if (!groupInfo.groupContent) return '``';
+    let content = groupInfo.groupContent.replace(makeRegExp(`/(\\\\*)(?:\\^|\\$)/g`), (_all, slashes) =>
+      this.checkIsSlashedSymbol(slashes) ? slashes.slice(2) : '',
+    );
+
+    for (const groupSymbol of groupStubSymbols) {
+      const currentGroupInfo = wholeGroupSymbolToInfoDict[groupSymbol];
+
+      content = content.replace(makeRegExp(`/${groupSymbol}+/g`), all => {
+        if (wholeGroupSymbolToInfoDict[all[0] as GroupStubSymbol])
+          wholeGroupSymbolToInfoDict[all[0] as GroupStubSymbol].parent = groupInfo;
+
+        return currentGroupInfo.groupKey.includes('!')
+          ? `\${''}`
+          : `\${${
+              currentGroupInfo.isCountable
+                ? this.makeGroupTypeName(userRegStri, currentGroupInfo.groupName)
+                : this.makeUncountableGroupTypeName(userRegStri, currentGroupInfo.groupName)
+            }${currentGroupInfo.isOpt ? ` ${this.unionStubSymbol} ''` : ''}}`;
+      });
     }
 
-    const contentWithUnions = `\`${groupContent
-      .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
-      .replace(makeRegExp(`/${this.slashStubSymbol}/g`), '\\')
-      .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '(')
-      .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), ')')
-      .split('|')
-      .join('` | `')
-      .replace(
-        makeRegExp(`/(?:(\\\\*)\\[(?:\\d[-\\d]*\\d)?]|(\\\\{1,})d)(${this.quantifierRegStr}|)/g`),
-        (all, slashes: string | undefined, slashes1: string | undefined, quantifier: string | undefined) => {
-          const optionalSign = this.checkIsOptionalQuantifier(quantifier) ? " | ''" : '';
+    const contentWithUnions = `\`${
+      content
+        .split('|')
+        .join('` | `')
+        .replace(
+          makeRegExp(`/(?:(\\\\*)\\[(?:\\d[-\\d]*\\d)?]|(\\\\{1,})d)(${this.quantifierRegStr}|)/g`),
+          (all, slashes: string | undefined, slashes1: string | undefined, quantifier: string | undefined) => {
+            const optionalSign = this.checkIsOptionalQuantifier(quantifier) ? " | ''" : '';
 
-          if (slashes1 !== undefined) {
-            return this.checkIsSlashedSymbol(slashes1) ? `\${number${optionalSign}}` : all;
-          }
+            if (slashes1 !== undefined) {
+              return this.checkIsSlashedSymbol(slashes1) ? `\${number${optionalSign}}` : all;
+            }
 
-          return this.checkIsSlashedSymbol(slashes) ? all : `\${number${optionalSign}}`;
-        },
-      )
-      .replace(makeRegExp(`/((?:\\\\\\\\)?[^\\\`])(${this.quantifierRegStr})/g`), (all, char, quantifier) =>
-        this.checkIsOptionalQuantifier(quantifier) ? `\${\`${char}\` | ''}` : all,
-      )
-      .replace(makeRegExp(`/(\\\\+)[ws](${this.quantifierRegStr}|)/g`), (all, slashes) => {
-        return this.checkIsSlashedSymbol(slashes) ? '${string}' : all;
-      })
-      .replace(makeRegExp(`/\\[(?:[^\\]]*?\\]?[^\\]]*)*?\\](${this.quantifierRegStr}|)/g`), (all, quantifier) => {
-        return '${string}';
-      })
-      .replace(makeRegExp(`/([^\\\\])(${this.quantifierRegStr})/g`), (_all, char, quantifier) =>
-        this.checkIsOptionalQuantifier(quantifier) ? '${string}' : `${char}\${string}`,
-      )
-      .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '|')
-      .replace(makeRegExp(`/${this.unionStubSymbol}/g`), '|')
-      .replace(/`\${string}`/g, 'string')}\``;
+            return this.checkIsSlashedSymbol(slashes) ? all : `\${number${optionalSign}}`;
+          },
+        )
+        .replace(makeRegExp(`/\\[(?:[^\\]]*?\\]?[^\\]]*)*?\\](${this.quantifierRegStr}|)/g`), () => {
+          return '${string}';
+        })
+        .replace(makeRegExp(`/((?:\\\\\\\\)?[^\\\`])(${this.quantifierRegStr})/g`), (all, char, quantifier) =>
+          this.checkIsOptionalQuantifier(quantifier) ? `\${\`${char}\` | ''}` : all,
+        )
+        .replace(makeRegExp(`/(?:(\\\\+)[ws]|\\.)(${this.quantifierRegStr}|)/g`), (all, slashes) => {
+          return slashes === undefined ? '${string}' : this.checkIsSlashedSymbol(slashes) ? '${string}' : all;
+        })
+        .replace(makeRegExp(`/([^\\\\])(${this.quantifierRegStr})/g`), (_all, char, quantifier) =>
+          this.checkIsOptionalQuantifier(quantifier) ? '${string}' : `${char}\${string}`,
+        )
+        .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '|')
+        .replace(makeRegExp(`/${this.unionStubSymbol}/g`), '|')
+        .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '(')
+        .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), ')')
+        .replace(makeRegExp(`/${this.openSquareBracketStubSymbol}{3}/g`), '[')
+        .replace(makeRegExp(`/${this.closeSquareBracketStubSymbol}{3}/g`), ']')
+        .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
+        .replace(makeRegExp(`/${this.slashStubSymbol}/g`), '\\')
+        .replace(makeRegExp(`/${this.dotStubSymbol}/g`), '.')
+      // .replace(/`\${string}`/g, 'string')
+      //
+    }\``;
 
     return contentWithUnions;
   };
 
-  checkIsOptionalQuantifier = (quantifier: string | undefined) =>
-    quantifier !== undefined &&
-    (quantifier.endsWith('?') ||
-      quantifier.endsWith('*') ||
-      quantifier.startsWith('{0,') ||
-      quantifier.startsWith('{,') ||
-      quantifier === '{0}');
+  checkIsOptionalQuantifier = (quantifier: string | undefined) => {
+    return (
+      quantifier !== undefined &&
+      ((quantifier.endsWith('?') && !quantifier.startsWith('+')) ||
+        quantifier.endsWith('*') ||
+        quantifier.startsWith('{0,') ||
+        quantifier.startsWith('{,') ||
+        quantifier === '{0}')
+    );
+  };
 
   sortGroupIndexes = (a: number, b: number) => a - b;
 
@@ -240,23 +351,35 @@ export class TransformProcess {
 
     do stubCharCode++;
     while (userWritedRegStr.includes(String.fromCharCode(stubCharCode)));
-    this.stringStubSymbol = String.fromCharCode(stubCharCode) as StringStubSymbol;
+    this.stringStubSymbol = String.fromCharCode(stubCharCode) as StubSymbol;
 
     do stubCharCode++;
     while (userWritedRegStr.includes(String.fromCharCode(stubCharCode)));
-    this.slashStubSymbol = String.fromCharCode(stubCharCode) as SlashStubSymbol;
+    this.slashStubSymbol = String.fromCharCode(stubCharCode) as StubSymbol;
 
     do stubCharCode++;
     while (userWritedRegStr.includes(String.fromCharCode(stubCharCode)));
-    this.unionStubSymbol = String.fromCharCode(stubCharCode) as UnionStubSymbol;
+    this.dotStubSymbol = String.fromCharCode(stubCharCode) as StubSymbol;
 
     do stubCharCode++;
     while (userWritedRegStr.includes(String.fromCharCode(stubCharCode)));
-    this.openParenthesisStubSymbol = String.fromCharCode(stubCharCode) as OpenParenthesisStubSymbol;
+    this.unionStubSymbol = String.fromCharCode(stubCharCode) as StubSymbol;
 
     do stubCharCode++;
     while (userWritedRegStr.includes(String.fromCharCode(stubCharCode)));
-    this.closeParenthesisStubSymbol = String.fromCharCode(stubCharCode) as CloseParenthesisStubSymbol;
+    this.openParenthesisStubSymbol = String.fromCharCode(stubCharCode) as StubSymbol;
+
+    do stubCharCode++;
+    while (userWritedRegStr.includes(String.fromCharCode(stubCharCode)));
+    this.closeParenthesisStubSymbol = String.fromCharCode(stubCharCode) as StubSymbol;
+
+    do stubCharCode++;
+    while (userWritedRegStr.includes(String.fromCharCode(stubCharCode)));
+    this.openSquareBracketStubSymbol = String.fromCharCode(stubCharCode) as StubSymbol;
+
+    do stubCharCode++;
+    while (userWritedRegStr.includes(String.fromCharCode(stubCharCode)));
+    this.closeSquareBracketStubSymbol = String.fromCharCode(stubCharCode) as StubSymbol;
 
     const groupStubSymbols: GroupStubSymbol[] = [];
 
@@ -291,6 +414,16 @@ export class TransformProcess {
     return regStr.replace(/(\\+?)\|/g, (all, slashes: string) => {
       return this.checkIsSlashedSymbol(slashes) ? `${slashes.slice(2)}${this.unionStubSymbol.repeat(3)}` : all;
     });
+  };
+
+  someOfGroupParents = (groupInfo: GroupInfo, someCb: (groupInfo: GroupInfo) => boolean) => {
+    while (groupInfo.parent !== null) {
+      // console.log('SOME', groupInfo.groupName);
+      if (someCb(groupInfo)) return true;
+      groupInfo = groupInfo.parent;
+    }
+
+    return false;
   };
 
   replaceSlashedParenthesis = (regStr: string) => {
@@ -342,7 +475,11 @@ export class TransformProcess {
     return regStr;
   };
 
-  replaceSlashes = (regStr: string) => {
-    return regStr.replace(/\\{4}/g, () => this.slashStubSymbol + this.slashStubSymbol);
+  replaceStubs = (regStr: string) => {
+    return regStr
+      .replace(/\\{4}/g, this.slashStubSymbol.repeat(2))
+      .replace(/\\{2}\./g, this.dotStubSymbol.repeat(3))
+      .replace(/\\{2}\[/g, this.openSquareBracketStubSymbol.repeat(3))
+      .replace(/\\{2}\]/g, this.closeSquareBracketStubSymbol.repeat(3));
   };
 }

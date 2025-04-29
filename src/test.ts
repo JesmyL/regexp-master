@@ -1,6 +1,9 @@
 import { makeNamedRegExp } from 'model';
 
 const getValue = <Value>(_: Value) => {};
+const getKeys = <ReqKeys extends string, OptKeys extends string = string>(
+  _: Record<ReqKeys, unknown> & Partial<Record<OptKeys, unknown>>,
+) => {};
 
 const arg: [''] = [''];
 
@@ -70,23 +73,50 @@ getValue<{ opt?: ''; opt1?: ''; r: `12` | '' }>(makeNamedRegExp('/(?<r>12(?<opt>
 const str = '123';
 const a = { b: '' };
 
-makeNamedRegExp(
-  `/\\\\(?<str>\\w+\${)(\\\\ \\d[1,2])?((\\d{3,\${txt}\\${str})|(\\\${txt}\\\\\${txt1}\\\\\\\${txt2}\\\\\\\\\${txt3}${str}|${a.b}))/`,
+getKeys<'str' | '$3' | '$0', '$2' | '$4' | '$5'>(
+  makeNamedRegExp(
+    `/\\\\(?<str>\\w+\${)(\\\\ \\d[1,2])?((\\d{3,\${txt}\\${str})|(\\\${txt}\\\\\${txt1}\\\\\\\${txt2}\\\\\\\\\${txt3}${str}|${a.b}))/`,
+  ).transform(arg),
 );
 
-const sooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooLongString = 'str';
+const veryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongString = 'str';
 
 makeNamedRegExp(
   `/\\\\\\(?<!>\\w+\${)(${
     //
-    sooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooLongString
+    veryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongString
+    //
+    //
   }\\\\ \\d[1,2])?${str}((\\d{3,\${txt}\\\\\\\\\\${str})|(\${str}|${
     a.b
-  }|(?<name>)[1479]))(?<name1>(?<opt1> \\\\\\\\\\( \\() )|(?<opt2> )|)${sooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooLongString}/`,
-).transform(['']).name1;
+  }|(?<name>)[1479]))(?<name1>(?<opt1> \\\\\\\\\\( \\() )|(?<opt2> )|)${veryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongString}/`,
+).transform(arg).name1;
 
 makeNamedRegExp(
   `/(?<$0th>(?<$1th>(?<$2nd>){,3})(nonamϭϰe| )+(?<$3th>\\d{2,3}){2,3}\\\\\\\\\\\\\\|\\\${ \\(?<$4>(?<$5th> {3,5}(?<$6th>(?<$7th>(?<$8th>))(){[234]?}(){,})Ϩ)\\)) ${str}in zero/gim`,
-).transform(['']).$0;
+).transform(arg).$0;
 
-makeNamedRegExp(`/(?<$0th> |sds )(noname|)/gim`).transform(['']).$0;
+getKeys<'$0' | '$0th' | '$2'>(makeNamedRegExp(`/(?<$0th> |sds )(noname|)/gim`).transform(arg));
+
+getValue<`[${string}]` | undefined>(
+  makeNamedRegExp(
+    `/(?<before>^|\\n)(?<beforeSpaces> *)(?<hashes>#{1,2})(?<blockHashPosition>${
+      //
+      str
+    })(?<associations>_?(?<secretWidStr>[${
+      a.b
+    }]*)(?<modificators>!?))? *(?<info>\\[(?<blockHeader>.+?)\\])?(?<beforeCommentSpaces> *)(?<comment>[\\w\\W]+?)(?=\\n *#|$)/g`,
+  ).transform(arg).info,
+);
+
+getValue<string | undefined>(
+  makeNamedRegExp(
+    '/(?<bookn>\\d?(?!(\\s*([а-яё]+))))\\s*((?<chapterStr>\\d{1,3})((:|\\s+)(?<verseStr>(?!\\d{1,3}))(\\s*(?<verseSeparator>[-,]?)\\s*)(?<!finishVerseStr>\\d{1,3})?)?)?/i',
+  ).transform(arg).verseSeparator,
+);
+
+getValue<never | undefined>(makeNamedRegExp('/(?:((?!(ababa+?)) ))(jaja) /').transform(arg).$2);
+
+getKeys<'name' | '$2' | 'name1' | '$4'>(
+  makeNamedRegExp('/(?<name>n)(?:just 1)(2)(?im-s:just 2)?(?<name1>n1)(?<=just 3)(4)(?<!just 4)/i').transform(arg),
+);
