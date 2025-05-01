@@ -1,15 +1,28 @@
 import { makeRegExp } from './makeRegExp';
 import { NamedRegExpRegulars, makeNamedRegExp as maker } from './model';
 import { prepareNameMakedRegExp } from './prepareNameMakedRegExp';
+import { TransformProcess } from './TransformProcess';
 
 const regReps: Record<string, NamedRegExpRegulars<object>> = {};
 
 export const makeNamedRegExp: typeof maker = (stringRegExp, setLastIndexTo) => {
   if (regReps[stringRegExp] === undefined) {
-    const { positionedNames, perparedRegStr, positions } = prepareNameMakedRegExp(stringRegExp as never);
+    const { positionedNames, perparedRegStr, positions } = prepareNameMakedRegExp(stringRegExp as never, undefined);
+    let namesToPositions: Record<string, number> | null = null;
+
+    const regStr = perparedRegStr.replace(makeRegExp('/(\\\\+)<([$_a-z][\\w$_]*)>/gi'), (all, slashes, name) => {
+      if (namesToPositions === null) {
+        namesToPositions = {};
+        Object.entries(positionedNames).forEach(([key, value]) => (namesToPositions![value] = +key));
+      }
+
+      if (TransformProcess.checkIs4xSlashes(slashes)) return all;
+
+      return `${slashes}${namesToPositions[name]}`;
+    });
 
     regReps[stringRegExp] = {
-      regExp: makeRegExp(perparedRegStr as never),
+      regExp: makeRegExp(regStr as never),
       transform: args => {
         const reps: Record<string, string | undefined> = { $0: args[0] };
 

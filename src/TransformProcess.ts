@@ -657,7 +657,7 @@ export class TransformProcess {
 if (0) {
   const { regExp, transform } = makeNamedRegExp(
     // X    1 X        2         3   4    X      5
-    `/(?!&&)()(?<! %%%)(?<a> )[|](?:)(888)(?: ){}(\\2)/`,
+    `/(?!&&)()(?<! %%%)(?<a> )[|](?:)(888)(?: ){}(\\2)(\\<a>?)/`,
   );
   const match = ' |888 {}  '.match(regExp);
   console.info(match && [transform(match), transform(match).$0], regExp);
