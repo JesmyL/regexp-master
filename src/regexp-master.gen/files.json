@@ -1,4 +1,1 @@
-[
-    "src/test.ts",
-    "src/TransformProcess.ts"
-]
+["src/TransformProcess.ts", "src/test.ts"]

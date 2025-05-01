@@ -22,7 +22,7 @@ const execAsync = stringCommand => {
     exec(stringCommand, error => {
       if (error) rej(error);
       else res();
-    }).on('message', message => console.log(message)),
+    }).on('message', message => console.info(message)),
   );
 };
 

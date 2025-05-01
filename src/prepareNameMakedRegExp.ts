@@ -23,7 +23,7 @@ export const prepareNameMakedRegExp = (reg: StrRegExp, errorsStore?: string[]) =
       index: number,
       restContent: string,
     ) => {
-      if (TransformProcess.checkIsSlashedSymbol(slashes)) return all;
+      if (TransformProcess.checkIs4xSlashes(slashes)) return all;
       if (key !== undefined && key.match(makeRegExp(`/^[${groupKeysStr}]/`))) return all;
 
       openPosition++;
