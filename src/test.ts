@@ -117,7 +117,8 @@ getValue<string | undefined>(
   ).transform(arg).verseSeparator,
 );
 
-getValue<{ $2?: never }>(makeNamedRegExp(`/(?:((?!(ababa+?)) ))(jaja) /`).transform(arg));
+getValue<{ $2?: `ababa${string}` }>(makeNamedRegExp(`/(?:((?!(ababa+?)) ))(jaja) /`).transform(arg));
+
 getValue<{ $3: `job` }>(makeNamedRegExp(`/(?:((?!(ababa+?)) ))[|](job) /`).transform(arg));
 
 getKeys<`name` | `$2` | `name1` | `$4`>(
@@ -127,7 +128,28 @@ getKeys<`name` | `$2` | `name1` | `$4`>(
 getValue<{ $0: `^^` }>(makeNamedRegExp(`/(\\^)\\1/g`).transform(arg));
 getValue<{ $0: `$$` }>(makeNamedRegExp(`/(\\$)\\1/g`).transform(arg));
 getValue<{ $0: `\\\\\x02` }>(makeNamedRegExp(`/(\\\\$)\\2/g`).transform(arg));
-getValue<{ avvva: ' JJJ' }>(makeNamedRegExp(`/()(?<avva> JJJ)[|](888) {}(?<avvva>\\2)/`).transform(arg));
+
+getValue<{ $4: '888' }>(
+  makeNamedRegExp(
+    //X     1             X       2         X   3    X      4
+    `/(?:&&)(?<$1th>first)(?: %%%)(?<a> )[|](?:)(888)(?: ){}(\\3)/`,
+  ).transform(arg),
+);
+
+getValue<{ avvva: ' JJJ' }>(
+  makeNamedRegExp(
+    //X     1   2               X         3
+    `/(?:uN)(FF)(?<avva> JJJ)[|](?:888) {}(?<avvva>\\2)/`,
+  ).transform(arg),
+);
+
+getValue<` ${string}888=BBB{} `>(
+  makeNamedRegExp(
+    // X    1 X        2         X   3        X      4
+    `/(?!&&)()(?<! %%%)(?<a> )[|](?:)(888=BBB)(?: ){}(\\2)/`,
+  ).transform(arg).$0,
+);
+
 getValue<{ $0: `${string}.a${string}a${string}.` }>(makeNamedRegExp(`/(\\W\\.)a...a\\1/g`).transform(arg));
 getValue<{ $0: `%\\\\%` }>(makeNamedRegExp(`/(%)\\\\\\1/g`).transform(arg));
 

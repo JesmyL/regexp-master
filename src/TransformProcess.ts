@@ -100,6 +100,7 @@ export class TransformProcess {
 
       const groups: Record<number, string> = {};
       const groupSymbolsDict: Record<number, GroupStubSymbol> = {};
+      const countableGroupSymbolsDict: Record<number, GroupStubSymbol> = {};
       const symbolGroupsDict: Record<GroupStubSymbol, number> = {} as never;
 
       let regStr = userWritedRegStr.slice(1, userWritedRegStr.lastIndexOf('/'));
@@ -117,10 +118,12 @@ export class TransformProcess {
         groups,
         groupStubSymbols,
         groupSymbolsDict,
+        countableGroupSymbolsDict,
         symbolGroupsDict,
       });
 
       const groupSymbols = Object.values(groupSymbolsDict);
+      const countableGroupSymbols = Object.values(countableGroupSymbolsDict);
 
       const groupIndexes = Object.keys(groups).map(Number).sort(this.sortGroupIndexes);
       const uncountableGroupSymbolToInfoDict: Partial<Record<GroupStubSymbol, GroupInfo>> = {};
@@ -208,7 +211,7 @@ export class TransformProcess {
           isOpt,
           isOptChildren,
           groupStr,
-          groupSymbol: groupSymbolsDict[groupIndex],
+          groupSymbol,
           groupName,
           groupContent,
           groupKey: '',
@@ -231,20 +234,20 @@ export class TransformProcess {
         groupTypeContentsDict[groupInfo.groupName] = this.makeGroupTypeFromGroupContent({
           userRegStri,
           wholeGroupSymbolToInfoDict,
+          groupSymbolToInfoDict,
           groupStubSymbols,
           groupInfo,
           groupNameToSymbolDict,
+          countableGroupSymbols,
         });
       });
 
       Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
-        groupInfo.isNever = this.someOfGroupParents(groupInfo, groupInfo => {
-          return groupInfo.groupKey.includes('!');
-        });
+        groupInfo.isNever = this.checkIsGroupNever(groupInfo);
       });
 
       Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
-        const typeContent = groupTypeContentsDict[groupInfo.groupName];
+        const typeContent = `${groupInfo.isNever ? 'undefined & ' : ''}${groupTypeContentsDict[groupInfo.groupName]}`;
 
         if (groupInfo.isCountable) {
           const typeName = this.makeGroupTypeName(userRegStri, groupInfo.groupName);
@@ -252,8 +255,8 @@ export class TransformProcess {
           recordFieldsTypes.push(
             `${groupInfo.groupName}${groupInfo.isOpt || groupInfo.isNever ? '?' : ''}: ${typeName}`,
           );
-          groupTypeParts.push(`type ${typeName} = ${groupInfo.isNever ? 'undefined & ' : ''}${typeContent};`);
-        } else if (!groupInfo.groupKey.includes('!')) {
+          groupTypeParts.push(`type ${typeName} = ${typeContent};`);
+        } else {
           const typeName = this.makeUncountableGroupTypeName(userRegStri, groupInfo.groupName);
 
           uncountableGroupPartTypes.push(`type ${typeName} = ${typeContent};`);
@@ -357,67 +360,95 @@ export class TransformProcess {
     return regStr;
   };
 
+  checkIsGroupNever = (groupInfo: GroupInfo) => {
+    return (
+      groupInfo.isNever ||
+      groupInfo.groupKey.includes('!') ||
+      this.someOfGroupParents(groupInfo, groupInfo => {
+        return groupInfo.groupKey.includes('!');
+      })
+    );
+  };
+
   makeGroupTypeFromGroupContent = ({
     groupInfo,
     wholeGroupSymbolToInfoDict,
     groupStubSymbols,
+    countableGroupSymbols,
     userRegStri,
     groupNameToSymbolDict,
+    groupSymbolToInfoDict,
   }: {
     userRegStri: number;
     wholeGroupSymbolToInfoDict: Record<GroupStubSymbol, GroupInfo>;
     groupStubSymbols: GroupStubSymbol[];
+    countableGroupSymbols: GroupStubSymbol[];
     groupInfo: GroupInfo;
     groupNameToSymbolDict: Record<GroupName, GroupStubSymbol>;
+    groupSymbolToInfoDict: Record<GroupStubSymbol, GroupInfo>;
   }) => {
     if (!groupInfo.groupContent) return '``';
+    groupInfo.isNever = this.checkIsGroupNever(groupInfo);
 
     let content = groupInfo.groupContent.replace(makeRegExp(`/(?<!${this.escapeStubSymbol})(?:[$^])/g`), '');
 
     for (const groupSymbol of groupStubSymbols) {
       const currentGroupInfo = wholeGroupSymbolToInfoDict[groupSymbol];
+      if (currentGroupInfo === undefined) continue;
+
+      currentGroupInfo.isNever = this.checkIsGroupNever(currentGroupInfo);
 
       content = content.replace(
         makeRegExp(`/${groupSymbol}+|\\\\{2}(?:(\\d{1,2})|<([\\w$_]+)>)(${this.quantifierRegStr}|)/g`),
         (_all, linkNumber: string | undefined, linkName: string | undefined, quantifier: string | undefined) => {
-          let groupName = currentGroupInfo.groupName;
+          let typeName: string | null = null;
+
           let isOptionalLink = false;
 
-          if (!linkNumber && !linkName) {
-            if (wholeGroupSymbolToInfoDict[groupSymbol]) wholeGroupSymbolToInfoDict[groupSymbol].parent = groupInfo;
-          } else {
-            isOptionalLink = this.checkIsOptionalQuantifier(quantifier);
-
-            // console.log({
-            //   groupInfo,
-            //   wholeGroupSymbolToInfoDict,
-            //   groupStubSymbols,
-            //   userRegStri,
-            //   groupNameToSymbolDict,
-            // });
-
-            if (linkNumber) {
-              if (`$${linkNumber}` in groupNameToSymbolDict) {
-                groupName = `$${linkNumber}` as never;
-              } else {
-                const groupSymbolByLinkNumber = groupStubSymbols[+linkNumber - 1];
-
-                if (groupSymbolByLinkNumber !== undefined) {
-                  groupName = wholeGroupSymbolToInfoDict[groupSymbolByLinkNumber].groupName;
-                } else return `\\x${linkNumber.padStart(2, '0')}`;
+          do {
+            if (!linkNumber && !linkName) {
+              if (wholeGroupSymbolToInfoDict[groupSymbol]) {
+                wholeGroupSymbolToInfoDict[groupSymbol].parent = groupInfo;
               }
-            } else if (linkName) {
-              groupName = linkName as never;
-            }
-          }
+            } else {
+              isOptionalLink = this.checkIsOptionalQuantifier(quantifier);
+              let groupName = currentGroupInfo.groupName;
 
-          return currentGroupInfo.groupKey.includes('!')
-            ? `\${''}`
-            : `\${${
-                currentGroupInfo.isCountable
-                  ? this.makeGroupTypeName(userRegStri, groupName)
-                  : this.makeUncountableGroupTypeName(userRegStri, groupName)
-              }${currentGroupInfo.isOpt || isOptionalLink ? ` ${this.unionStubSymbol} ''` : ''}}`;
+              if (linkNumber) {
+                if (`$${linkNumber}` in groupNameToSymbolDict) {
+                  groupName =
+                    wholeGroupSymbolToInfoDict[groupNameToSymbolDict[`$${linkNumber}` as GroupName]].groupName;
+                } else {
+                  const groupSymbolByLinkNumber = countableGroupSymbols[+linkNumber - 1];
+
+                  if (groupSymbolByLinkNumber !== undefined) {
+                    const groupInfo = wholeGroupSymbolToInfoDict[groupSymbolByLinkNumber];
+
+                    typeName = this.makeGroupTypeName(userRegStri, groupInfo.groupName);
+
+                    break;
+                  } else return `\\x${linkNumber.padStart(2, '0')}`;
+                }
+              } else if (linkName) {
+                groupName = wholeGroupSymbolToInfoDict[groupNameToSymbolDict[linkName as GroupName]].groupName;
+              }
+
+              typeName = this.makeGroupTypeName(userRegStri, groupName);
+            }
+          } while (false);
+
+          return `\${${
+            typeName ??
+            (currentGroupInfo.isCountable
+              ? this.makeGroupTypeName(userRegStri, currentGroupInfo.groupName)
+              : this.makeUncountableGroupTypeName(userRegStri, currentGroupInfo.groupName))
+          }${
+            currentGroupInfo.isOpt ||
+            isOptionalLink ||
+            (groupInfo.groupSymbol === GroupStubSymbol.zero && currentGroupInfo.isNever)
+              ? ` ${this.unionStubSymbol} ''`
+              : ''
+          }}`;
         },
       );
     }
@@ -579,16 +610,18 @@ export class TransformProcess {
   };
 
   insertGroupsWithReplace = ({
-    groupSymbolsDict,
     groups,
-    groupStubSymbols,
     regStr,
+    groupSymbolsDict,
+    groupStubSymbols,
     symbolGroupsDict,
+    countableGroupSymbolsDict,
   }: {
     regStr: string;
     groups: Record<number, string>;
     groupStubSymbols: GroupStubSymbol[];
     groupSymbolsDict: Record<number, GroupStubSymbol>;
+    countableGroupSymbolsDict: Record<number, GroupStubSymbol>;
     symbolGroupsDict: Record<GroupStubSymbol, number>;
   }) => {
     let isNeedReplace = true;
@@ -599,14 +632,18 @@ export class TransformProcess {
 
       regStr = regStr.replace(
         makeRegExp(
-          `/(?<!${this.escapeStubSymbol})\\((?:${this.escapeStubSymbol}[()]|[^()])*?\\)(?:${this.quantifierRegStr}|)/g`,
+          `/(?<!${this.escapeStubSymbol})\\((\\?(?:!|<!|.))?(?:${this.escapeStubSymbol}[()]|[^()])*?\\)(?:${this.quantifierRegStr}|)/g`,
         ),
-        (all, index) => {
+        (all, groupKey: string | undefined, index) => {
           isNeedReplace = true;
 
           groups[index] = all;
           groupSymbolsDict[index] = groupStubSymbols[otherStubSymboli++] as GroupStubSymbol;
           symbolGroupsDict[groupSymbolsDict[index]] = index;
+
+          if (groupKey === undefined || groupKey === '?<') {
+            countableGroupSymbolsDict[index] = groupSymbolsDict[index];
+          }
 
           return groupSymbolsDict[index].repeat(all.length);
         },
@@ -618,7 +655,10 @@ export class TransformProcess {
 }
 
 if (0) {
-  const { regExp, transform } = makeNamedRegExp(`/()(?<a> )[|](888) {}(\\2)/`);
-  const match = ' |888 {} '.match(regExp);
-  console.info(match && [transform(match), transform(match).$0]);
+  const { regExp, transform } = makeNamedRegExp(
+    // X    1 X        2         3   4    X      5
+    `/(?!&&)()(?<! %%%)(?<a> )[|](?:)(888)(?: ){}(\\2)/`,
+  );
+  const match = ' |888 {}  '.match(regExp);
+  console.info(match && [transform(match), transform(match).$0], regExp);
 }
