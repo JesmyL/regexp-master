@@ -143,7 +143,7 @@ getValue<{ avvva: ' JJJ' }>(
   ).transform(arg),
 );
 
-getValue<` ${string}888=BBB{} `>(
+getValue<` ${string}888=BBB {} `>(
   makeNamedRegExp(
     // X    1 X        2         X   3        X      4
     `/(?!&&)()(?<! %%%)(?<a> )[|](?:)(888=BBB)(?: ){}(\\2)/`,
@@ -191,3 +191,5 @@ getValue<{ $0: `${string}6}${string}6}` }>(makeNamedRegExp(`/([ \\]\` + \\]\\\`$
 getValue<{ $0: `\n` }>(makeNamedRegExp(`/\\n/g`).transform(arg));
 getValue<{ $0: `_\` ` }>(makeNamedRegExp(`/_\` ()/g`).transform(arg));
 getValue<{ $0: string }>(makeNamedRegExp(`/\\u/g`).transform(arg));
+
+getValue<{ $0: `ac` | `bc` | `c` | `abc` | `bbc` }>(makeNamedRegExp(`/(?:a|(b))\\1c()/`).transform(arg));

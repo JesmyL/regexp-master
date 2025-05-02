@@ -1,6 +1,8 @@
-import { makeNamedRegExp } from './makeNamedRegExp';
 import { makeRegExp } from './makeRegExp';
+import { testMaker } from './test.maker';
 import { GroupInfo, GroupName, GroupStubSymbol, StubSymbol } from './types';
+
+setTimeout(testMaker, 500);
 
 export class TransformProcess {
   makerInvokesContentSplitterRegExp: RegExp;
@@ -15,6 +17,7 @@ export class TransformProcess {
   optionalNumberStubSymbol = StubSymbol.def;
   stringTemplateStubSymbol = StubSymbol.def;
   unionStubSymbol = StubSymbol.def;
+  optionalStubSymbol = StubSymbol.def;
   untemplatedStubSymbol = StubSymbol.def;
   slashStubSymbol = StubSymbol.def;
   escapeStubSymbol = StubSymbol.def;
@@ -50,6 +53,7 @@ export class TransformProcess {
     this.openParenthesisStubSymbol = makeStub();
     this.closeParenthesisStubSymbol = makeStub();
     this.unionStubSymbol = makeStub();
+    this.optionalStubSymbol = makeStub();
     this.untemplatedStubSymbol = makeStub();
 
     const groupStubSymbols: GroupStubSymbol[] = [];
@@ -72,8 +76,7 @@ export class TransformProcess {
     this.content = this.cutFileComments(this.content);
 
     const splits = this.content.split(this.makerInvokesContentSplitterRegExp);
-    const recordTypes: string[] = [];
-    const recordPartsTypes: string[] = [];
+    const namespaces: string[] = [];
     const registeredTypeKeysSet = new Set<string>();
 
     for (let userRegStri = 1; userRegStri < splits.length; userRegStri++) {
@@ -96,6 +99,9 @@ export class TransformProcess {
         throw `StringRegExp must be template string - makeNamesRegExp(\`/ /g\`)`;
       }
 
+      let countableGroupi = 0;
+      let uncountableGroupi = 0;
+      const groupNameToSymbolDict = {} as Record<GroupName, GroupStubSymbol>;
       const groupStubSymbols = this.setStubSymbols(userWritedRegStr);
 
       const groups: Record<number, string> = {};
@@ -150,13 +156,10 @@ export class TransformProcess {
           isNever: false,
         },
       };
-      let countableGroupi = 0;
-      let uncountableGroupi = 0;
-      const groupNameToSymbolDict = {} as Record<GroupName, GroupStubSymbol>;
 
       for (const groupIndex of groupIndexes) {
         const groupStr = groups[groupIndex];
-        const groupNameMatch = groupStr.match(/\((\?(?:<[!=]|<([^>]*?)>|))?/);
+        const groupNameMatch = groupStr.match(makeRegExp('/\\((\\?(?:<[!=]|<([^>]*?)>|))?/'));
 
         if (groupNameMatch === null) throw 'Incorrect RegExp group';
         const matchedGroupName = groupNameMatch[2] as GroupName | undefined;
@@ -164,7 +167,8 @@ export class TransformProcess {
 
         if (!isNoname) {
           if (matchedGroupName === GroupName.empty) throw 'Group name can not be empty - <>';
-          if (matchedGroupName.match(/^\d|[^$_\w]/)) throw `Incorrect group name - <${matchedGroupName}>`;
+          if (matchedGroupName.match(makeRegExp('/^\\d|[^$_\\w]/')))
+            throw `Incorrect group name - <${matchedGroupName}>`;
         }
 
         const groupSymbol = groupSymbolsDict[groupIndex];
@@ -191,7 +195,7 @@ export class TransformProcess {
             groupSymbol,
             isHasSubTypes: false,
             isOpt,
-            isOptChildren: groupKey.includes('!'),
+            isOptChildren: groupKey.includes('!') || groupContent.includes('|'),
             isCountable: false,
             parent: null,
             isNever: false,
@@ -201,7 +205,8 @@ export class TransformProcess {
         }
 
         const groupContent = groupStr.slice(isNoname ? 1 : matchedGroupName.length + 4, groupStr.lastIndexOf(')'));
-        const isOptChildren = !isEachGroupIsOptional && groupContent.includes('|');
+
+        const isOptChildren = isEachGroupIsOptional || groupContent.includes('|');
 
         countableGroupi++;
         const groupName = matchedGroupName ?? (`$${countableGroupi}` as GroupName);
@@ -227,14 +232,21 @@ export class TransformProcess {
       const uncountableGroupPartTypes: string[] = [];
       const recordFieldsTypes: string[] = [];
       const wholeGroupSymbolToInfoDict = { ...groupSymbolToInfoDict, ...uncountableGroupSymbolToInfoDict };
+      this.setGroupInfoParents(wholeGroupSymbolToInfoDict);
+
+      Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
+        groupInfo.isNever = this.checkIsGroupNever(groupInfo);
+        groupInfo.isOpt = this.someOfGroupParents(
+          groupInfo,
+          parentInfo => parentInfo.isOpt || parentInfo.isOptChildren,
+        );
+      });
 
       Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
         if (groupTypeContentsDict[groupInfo.groupName] !== undefined)
           throw `Inclusive group name - <${groupInfo.groupName}>`;
         groupTypeContentsDict[groupInfo.groupName] = this.makeGroupTypeFromGroupContent({
-          userRegStri,
           wholeGroupSymbolToInfoDict,
-          groupSymbolToInfoDict,
           groupStubSymbols,
           groupInfo,
           groupNameToSymbolDict,
@@ -243,21 +255,19 @@ export class TransformProcess {
       });
 
       Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
-        groupInfo.isNever = this.checkIsGroupNever(groupInfo);
-      });
-
-      Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
-        const typeContent = `${groupInfo.isNever ? 'undefined & ' : ''}${groupTypeContentsDict[groupInfo.groupName]}`;
+        const typeContent = `${groupInfo.isNever && !groupInfo.isCountable ? 'undefined & ' : ''}${
+          groupTypeContentsDict[groupInfo.groupName]
+        }`;
 
         if (groupInfo.isCountable) {
-          const typeName = this.makeGroupTypeName(userRegStri, groupInfo.groupName);
+          const typeName = this.makeGroupTypeName(groupInfo.groupName);
 
           recordFieldsTypes.push(
             `${groupInfo.groupName}${groupInfo.isOpt || groupInfo.isNever ? '?' : ''}: ${typeName}`,
           );
           groupTypeParts.push(`type ${typeName} = ${typeContent};`);
         } else {
-          const typeName = this.makeUncountableGroupTypeName(userRegStri, groupInfo.groupName);
+          const typeName = this.makeUncountableGroupTypeName(groupInfo.groupName);
 
           uncountableGroupPartTypes.push(`type ${typeName} = ${typeContent};`);
         }
@@ -268,22 +278,33 @@ export class TransformProcess {
       if (registeredTypeKeysSet.has(typeKey)) continue;
       registeredTypeKeysSet.add(typeKey);
 
-      recordTypes.push(`Record<\n    ${typeKey},\n    {\n      ${recordFieldsTypes.join(';\n      ')}}\n  >`);
-      recordPartsTypes.push(groupTypeParts.concat(uncountableGroupPartTypes).join('\n'));
+      namespaces.push(
+        `namespace ${this.makeNamespaceTypeName('', namespaces.length)} {\n  ${groupTypeParts
+          .concat(uncountableGroupPartTypes)
+          .join(
+            '\n  ',
+          )}\n\n  export interface I extends Record<\n    ${typeKey},\n    {\n      ${recordFieldsTypes.join(
+          ';\n      ',
+        )}\n    }\n  > { '': '' }\n}`,
+      );
     }
 
-    if (!recordTypes.length) return null;
+    if (!namespaces.length) return null;
 
     return {
-      types: `${recordPartsTypes.join(
+      types: `${namespaces.join(
         '\n\n',
-      )}\n\n\ninterface _GlobalScopedNamedRegExpMakerGeneratedTypes\n  extends ${recordTypes.join(',\n  ')} {' ': ''}`,
+      )}\n\ninterface _GlobalScopedNamedRegExpMakerGeneratedTypes\n  extends ${namespaces
+        .map(this.makeNamespaceDotITypeName)
+        .join(',\n    ')} {\n    '': ''\n}`,
     };
   };
 
-  makeGroupTypeName = (userRegStri: number, groupName: GroupName) => `T${this.fileMD5}_${userRegStri}_${groupName}`;
-  makeUncountableGroupTypeName = (userRegStri: number, groupName: GroupName) =>
-    `U${this.fileMD5}_${userRegStri}_${groupName}`;
+  makeGroupTypeName = (groupName: GroupName) => `T${groupName}`;
+  makeUncountableGroupTypeName = (groupName: GroupName) => `U${groupName}`;
+
+  makeNamespaceTypeName = (_text: string, index: number) => `N${this.fileMD5}_${index + 1}`;
+  makeNamespaceDotITypeName = (text: string, index: number) => `${this.makeNamespaceTypeName(text, index)}.I`;
 
   checkIsHasSubTypes = (regStr: string, groupSymbols: GroupStubSymbol[]) => {
     return groupSymbols.some(char => regStr.includes(char));
@@ -370,87 +391,92 @@ export class TransformProcess {
     );
   };
 
+  setGroupInfoParents = (wholeGroupSymbolToInfoDict: Record<GroupStubSymbol, GroupInfo>) => {
+    for (const groupInfoSymbol in wholeGroupSymbolToInfoDict) {
+      const groupInfo = wholeGroupSymbolToInfoDict[groupInfoSymbol as GroupStubSymbol];
+
+      for (const currentGroupInfoSymbol in wholeGroupSymbolToInfoDict) {
+        const currentGroupInfo = wholeGroupSymbolToInfoDict[currentGroupInfoSymbol as GroupStubSymbol];
+
+        if (currentGroupInfo === undefined || currentGroupInfo === groupInfo) continue;
+        if (groupInfo.groupContent.includes(currentGroupInfo.groupSymbol)) currentGroupInfo.parent = groupInfo;
+      }
+    }
+  };
+
   makeGroupTypeFromGroupContent = ({
     groupInfo,
     wholeGroupSymbolToInfoDict,
     groupStubSymbols,
     countableGroupSymbols,
-    userRegStri,
     groupNameToSymbolDict,
-    groupSymbolToInfoDict,
   }: {
-    userRegStri: number;
     wholeGroupSymbolToInfoDict: Record<GroupStubSymbol, GroupInfo>;
     groupStubSymbols: GroupStubSymbol[];
     countableGroupSymbols: GroupStubSymbol[];
     groupInfo: GroupInfo;
     groupNameToSymbolDict: Record<GroupName, GroupStubSymbol>;
-    groupSymbolToInfoDict: Record<GroupStubSymbol, GroupInfo>;
   }) => {
     if (!groupInfo.groupContent) return '``';
-    groupInfo.isNever = this.checkIsGroupNever(groupInfo);
 
     let content = groupInfo.groupContent.replace(makeRegExp(`/(?<!${this.escapeStubSymbol})(?:[$^])/g`), '');
 
-    for (const groupSymbol of groupStubSymbols) {
-      const currentGroupInfo = wholeGroupSymbolToInfoDict[groupSymbol];
+    content = content.replace(
+      makeRegExp(`/\\\\{2}(?:(\\d{1,2})|<([\\w$_]+)>)(${this.quantifierRegStr}|)/g`),
+      (all, linkNumber: string | undefined, linkName: string | undefined, quantifier: string) => {
+        let linkTypeName: string | null = null;
+
+        let isOptionalLink: boolean | null = null;
+
+        if (!linkNumber && !linkName) return all;
+
+        let linkGroupName = groupInfo.groupName;
+
+        isOptionalLink =
+          this.checkIsOptionalQuantifier(quantifier) ||
+          groupInfo.isOpt ||
+          groupInfo.isOptChildren ||
+          this.someOfGroupParents(groupInfo, info => info.isOpt || info.isOptChildren);
+
+        if (linkNumber) {
+          if (`$${linkNumber}` in groupNameToSymbolDict) {
+            linkGroupName = wholeGroupSymbolToInfoDict[groupNameToSymbolDict[`$${linkNumber}` as GroupName]].groupName;
+          } else {
+            const groupSymbolByLinkNumber = countableGroupSymbols[+linkNumber - 1];
+
+            if (groupSymbolByLinkNumber !== undefined) {
+              const groupInfo = wholeGroupSymbolToInfoDict[groupSymbolByLinkNumber];
+
+              linkTypeName = this.makeGroupTypeName(groupInfo.groupName);
+            } else return `\\x${linkNumber.padStart(2, '0')}`;
+          }
+        } else if (linkName) {
+          linkGroupName = wholeGroupSymbolToInfoDict[groupNameToSymbolDict[linkName as GroupName]].groupName;
+        }
+
+        linkTypeName ??= this.makeGroupTypeName(linkGroupName);
+
+        return `\${${linkTypeName}${isOptionalLink ? this.optionalStubSymbol : ''}}`;
+      },
+    );
+
+    for (const currentGroupSymbol of groupStubSymbols) {
+      const currentGroupInfo = wholeGroupSymbolToInfoDict[currentGroupSymbol] as GroupInfo | undefined;
       if (currentGroupInfo === undefined) continue;
 
-      currentGroupInfo.isNever = this.checkIsGroupNever(currentGroupInfo);
+      // if (wholeGroupSymbolToInfoDict[currentGroupSymbol] && (currentGroupSymbol as never) !== groupInfo.groupSymbol) {
+      //   wholeGroupSymbolToInfoDict[currentGroupSymbol].parent = groupInfo;
+      // }
 
-      content = content.replace(
-        makeRegExp(`/${groupSymbol}+|\\\\{2}(?:(\\d{1,2})|<([\\w$_]+)>)(${this.quantifierRegStr}|)/g`),
-        (_all, linkNumber: string | undefined, linkName: string | undefined, quantifier: string | undefined) => {
-          let typeName: string | null = null;
+      content = content.replace(makeRegExp(`/${currentGroupSymbol}+/g`), () => {
+        const typeText = currentGroupInfo.isCountable
+          ? this.makeGroupTypeName(currentGroupInfo.groupName)
+          : this.makeUncountableGroupTypeName(currentGroupInfo.groupName);
 
-          let isOptionalLink = false;
+        const optionalSign = currentGroupInfo.isOpt || currentGroupInfo.isNever ? this.optionalStubSymbol : '';
 
-          do {
-            if (!linkNumber && !linkName) {
-              if (wholeGroupSymbolToInfoDict[groupSymbol]) {
-                wholeGroupSymbolToInfoDict[groupSymbol].parent = groupInfo;
-              }
-            } else {
-              isOptionalLink = this.checkIsOptionalQuantifier(quantifier);
-              let groupName = currentGroupInfo.groupName;
-
-              if (linkNumber) {
-                if (`$${linkNumber}` in groupNameToSymbolDict) {
-                  groupName =
-                    wholeGroupSymbolToInfoDict[groupNameToSymbolDict[`$${linkNumber}` as GroupName]].groupName;
-                } else {
-                  const groupSymbolByLinkNumber = countableGroupSymbols[+linkNumber - 1];
-
-                  if (groupSymbolByLinkNumber !== undefined) {
-                    const groupInfo = wholeGroupSymbolToInfoDict[groupSymbolByLinkNumber];
-
-                    typeName = this.makeGroupTypeName(userRegStri, groupInfo.groupName);
-
-                    break;
-                  } else return `\\x${linkNumber.padStart(2, '0')}`;
-                }
-              } else if (linkName) {
-                groupName = wholeGroupSymbolToInfoDict[groupNameToSymbolDict[linkName as GroupName]].groupName;
-              }
-
-              typeName = this.makeGroupTypeName(userRegStri, groupName);
-            }
-          } while (false);
-
-          return `\${${
-            typeName ??
-            (currentGroupInfo.isCountable
-              ? this.makeGroupTypeName(userRegStri, currentGroupInfo.groupName)
-              : this.makeUncountableGroupTypeName(userRegStri, currentGroupInfo.groupName))
-          }${
-            currentGroupInfo.isOpt ||
-            isOptionalLink ||
-            (groupInfo.groupSymbol === GroupStubSymbol.zero && currentGroupInfo.isNever)
-              ? ` ${this.unionStubSymbol} ''`
-              : ''
-          }}`;
-        },
-      );
+        return `\${${typeText}${optionalSign}}`;
+      });
     }
 
     const contentWithUnions = `\`${
@@ -460,17 +486,17 @@ export class TransformProcess {
         .replace(makeRegExp(`/(?<!${this.escapeStubSymbol})\\.+/g`), this.stringStubSymbol)
         .replace(makeRegExp(`/\\\\{2}(\\w)(${this.quantifierRegStr}|)/g`), (_all, char, quantifier) => {
           if (char === 'n') {
-            return this.checkIsOptionalQuantifier(quantifier) ? `\${'\\n' ${this.unionStubSymbol} ''}` : '\\n';
+            return this.checkIsOptionalQuantifier(quantifier) ? `\${'\\n'${this.optionalStubSymbol}}` : '\\n';
           }
 
           return this.checkIsOptionalQuantifier(quantifier)
-            ? `\${string ${this.unionStubSymbol} ''}`
+            ? `\${string${this.optionalStubSymbol}}`
             : this.stringStubSymbol;
         })
         .replace(makeRegExp(`/${this.slashStubSymbol}/g`), '\\')
         .replace(makeRegExp(`/${this.escapeStubSymbol}+/g`), '')
         .replace(makeRegExp(`/((?:\\\\\\\\)?[^\\\`])(${this.quantifierRegStr})/g`), (all, char, quantifier) =>
-          this.checkIsOptionalQuantifier(quantifier) ? `\${\`${char}\` ${this.unionStubSymbol} ''}` : all,
+          this.checkIsOptionalQuantifier(quantifier) ? `\${\`${char}\`${this.optionalStubSymbol}}` : all,
         )
         // .replace(makeRegExp(`/(?:(\\\\+)[ws]|\\.)(${this.quantifierRegStr}|)/g`), (all, slashes) => {
         //   return slashes === undefined ? '${string}' : this.checkIs4xSlashes(slashes) ? '${string}' : all;
@@ -483,7 +509,7 @@ export class TransformProcess {
         .split('|')
         .join('` | `')
         .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '|')
-        .replace(makeRegExp(`/${this.unionStubSymbol}/g`), '|')
+        .replace(makeRegExp(`/${this.optionalStubSymbol}/g`), " | ''")
         .replace(makeRegExp(`/${this.stringStubSymbol}+/g`), '${string}')
         .replace(makeRegExp(`/${this.optionalNumberStubSymbol}/g`), `\${number | ''}`)
         .replace(makeRegExp(`/${this.numberStubSymbol}/g`), `\${number}`)
@@ -522,9 +548,15 @@ export class TransformProcess {
   };
 
   someOfGroupParents = (groupInfo: GroupInfo, someCb: (groupInfo: GroupInfo) => boolean) => {
-    while (groupInfo.parent !== null) {
-      if (someCb(groupInfo)) return true;
-      groupInfo = groupInfo.parent;
+    const checkedSet = new Set();
+    let groupToCheck = groupInfo.parent;
+
+    while (groupToCheck !== null) {
+      if (checkedSet.has(groupToCheck)) return false;
+      checkedSet.add(groupToCheck);
+
+      if (someCb(groupToCheck)) return true;
+      groupToCheck = groupToCheck.parent;
     }
 
     return false;
@@ -652,13 +684,4 @@ export class TransformProcess {
 
     return regStr;
   };
-}
-
-if (0) {
-  const { regExp, transform } = makeNamedRegExp(
-    // X    1 X        2         3   4    X      5
-    `/(?!&&)()(?<! %%%)(?<a> )[|](?:)(888)(?: ){}(\\2)(\\<a>?)/`,
-  );
-  const match = ' |888 {}  '.match(regExp);
-  console.info(match && [transform(match), transform(match).$0], regExp);
 }
