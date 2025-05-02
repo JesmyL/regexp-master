@@ -8,7 +8,7 @@ export const regExpMasterVitePlugin: typeof pluginMaker = props => {
 
   return {
     name: 'regExpMasterVitePlugin',
-    enforce: 'pre' as const,
+    enforce: 'pre',
     watchChange: async (src: string, change: { event: 'create' | 'update' | 'delete' }) => {
       if (pluginUtils.checkIsInvalidSrcToTransform(src)) return;
 

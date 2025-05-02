@@ -36,7 +36,7 @@ getValue<string>(makeNamedRegExp(`/(?<numStr>\\d{,3}[amn]+)\\s\\n*/`).transform(
 getValue<string>(makeNamedRegExp(`/(?<numStr>\\d?[amn]+)\\s\\n*/`).transform(arg).numStr);
 getValue<string>(makeNamedRegExp(`/(?<numStr>\\d*[amn]+)\\s\\n*/`).transform(arg).numStr);
 
-getValue<`text ${number}${`\n` | ``}`>(makeNamedRegExp(`/(?<conNum>text \\d\\n*)/`).transform(arg).conNum);
+getValue<`text ${number}${`\n${string}` | ``}`>(makeNamedRegExp(`/(?<conNum>text \\d\\n*)/`).transform(arg).conNum);
 getValue<`text ${number}`>(makeNamedRegExp(`/(?<conNum>text \\d)/`).transform(arg).conNum);
 getValue<`text ${number}`>(makeNamedRegExp(`/(?<num>text \\d{2,3})/`).transform(arg).num);
 getValue<`text ${number}`>(makeNamedRegExp(`/(?<num>text \\d{1,})/`).transform(arg).num);
@@ -53,6 +53,11 @@ getValue<`text ${number | ``}`>(makeNamedRegExp(`/(?<num>text [1-3]{0,3})/`).tra
 getValue<`text ${number | ``}`>(makeNamedRegExp(`/(?<num>text [1-3]{,3})/`).transform(arg).num);
 getValue<`text ${number | ``}`>(makeNamedRegExp(`/(?<conNum>text [1-3]?)/`).transform(arg).conNum);
 getValue<`text ${number | ``}`>(makeNamedRegExp(`/(?<conNum>text [1-3]*)/`).transform(arg).conNum);
+
+getValue<'' | 't'>(makeNamedRegExp(`/t?/`).transform(arg).$0);
+getValue<`t${string}`>(makeNamedRegExp(`/t+/`).transform(arg).$0);
+getValue<`${`t${string}` | ''}${number}`>(makeNamedRegExp(`/t*\\d/`).transform(arg).$0);
+getValue<`t${string}`>(makeNamedRegExp(`/t{1,3}/`).transform(arg).$0);
 
 getValue<{ num?: `${number}`; bum: `aa` }>(makeNamedRegExp(`/(?<num>[1-3]+)?(?<bum>aa)/`).transform(arg));
 
@@ -166,9 +171,10 @@ getValue<{ $0: `\${2}\\\\\${2}` }>(makeNamedRegExp(`/($\{2})\\\\\\1/g`).transfor
 
 getValue<{ $0: `\\\${2}\\\\${`\\\${2}` | ''}` }>(makeNamedRegExp(`/(\\\$\{2})\\\\\\1?/g`).transform(arg));
 getValue<{ $0: `\\\${n}\\\\${`\\\${n}` | ''} \\\\\${n} ` }>(
-  makeNamedRegExp(`/(?<nnn>\\\$\{n})\\\\\\<nnn>? \\\\<nnn> /g`).transform(arg),
+  makeNamedRegExp(`/(?<nnn>\\\$\{n})\\\\\\k<nnn>? \\\\<nnn> /g`).transform(arg),
 );
 getValue<{ $0: `\\\${2}\\\\\\\${2}` }>(makeNamedRegExp(`/(\\$\{2})\\\\\\1/g`).transform(arg));
+getValue<{ $0: `\\\${2}\\\${2}` }>(makeNamedRegExp(`/(?<a>\\$\{2})\\k<a>/g`).transform(arg));
 getValue<{ $0: `\\\\${string}3}\\\\\\\\${string}3}` }>(makeNamedRegExp(`/(\\\\[\$\{]3})\\\\\\1/g`).transform(arg));
 getValue<{ $0: `[\\${`\\ ` | ``}${string}${string}\\${string}` }>(
   makeNamedRegExp(`/(\\[\^\\\\\ \*)\\W\\\\\s\\S\\\\\S/g`).transform(arg),
@@ -193,3 +199,31 @@ getValue<{ $0: `_\` ` }>(makeNamedRegExp(`/_\` ()/g`).transform(arg));
 getValue<{ $0: string }>(makeNamedRegExp(`/\\u/g`).transform(arg));
 
 getValue<{ $0: `ac` | `bc` | `c` | `abc` | `bbc` }>(makeNamedRegExp(`/(?:a|(b))\\1c()/`).transform(arg));
+
+getValue<{ $0: `aa` }>(makeNamedRegExp(`/\\1(a)/`).transform(arg));
+
+// circularly references itself
+// getValue<{ $0: `` }>(makeNamedRegExp(`/(\\1)/`).transform(arg));
+
+getValue<{ $0: `ss` }>(makeNamedRegExp(`/\\k<self>(?<self>s)/`).transform(arg));
+getValue<{ $0: `` }>(makeNamedRegExp(`/(?<self>)/`).transform(arg));
+
+getValue<{ $0: `c`; $1: 'a'; $2: 'b' }>(makeNamedRegExp(`/(?<=(a)(b))c/`).transform(arg));
+getValue<{ $0: `c`; $1: string }>(makeNamedRegExp(`/(?<=([ab])+)c/`).transform(arg));
+getValue<{ $0: `c`; $1: 'ab' }>(makeNamedRegExp(`/c(?=(ab))/`).transform(arg));
+
+getValue<{ $0: 'abc' | 'abbc' | 'ac' | 'a' | 'ab'; $1?: 'a' }>(
+  // @ts-ignore
+  makeNamedRegExp(`/(?:(a)|(ab))(?:(c)|(bc))/`).transform(arg),
+);
+
+getValue<{ $0: 'WORD' }>(makeNamedRegExp(`/\\bWORD\\B/`).transform(arg));
+getValue<`${`${`a`}${string}` | ''}b${`a`}${string}`>(makeNamedRegExp(`/(?=(a+))a*b\\1/`).transform(arg).$0);
+getValue<`b`>(makeNamedRegExp(`/(?=a)?b/`).transform(arg).$0);
+getValue<{ $0: ''; $1: string }>(makeNamedRegExp(`/(?<=([ab]+)([bc]+))$/`).transform(arg));
+getValue<{ $0: `${number}.${number | ''}` }>(makeNamedRegExp(`/(?<=\\$)\\d+(?:\\.\\d*)?/`).transform(arg));
+getValue<{ $0: `.${'png' | 'gif' | 'jpeg' | 'jpg'}` }>(makeNamedRegExp(`/\\.(?:png|jpe?g|gif)$/i`).transform(arg));
+getValue<{ $0: `${'title' | 'name'}=${string}` }>(makeNamedRegExp(`/(?:title|name)=(["'])(.*?)\\1/`).transform(arg));
+
+// todo:
+// \P{Script_Extensions=Latin}

@@ -25,6 +25,8 @@ export const testMaker = () => {
     );
 
     printMatch(regs, ' |888 {}  ');
+    printMatch(regs, ' |888 {} ');
+    printMatch(regs, ' |888 {}');
   }
 
   if (1) {

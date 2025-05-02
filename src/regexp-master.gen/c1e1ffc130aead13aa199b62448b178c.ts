@@ -1,6 +1,6 @@
 namespace Nc1e1ffc130aead13aa199b62448b178c_1 {
   type T$0 = `${Tstr}`;
-  type Tstr = `${string}`;
+  type Tstr = `${string}${string}`;
 
   export interface I extends Record<
     `/(?<str>\\w+)/`,
@@ -91,7 +91,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_7 {
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_8 {
   type T$0 = `${Tval}`;
-  type Tval = `text${string}`;
+  type Tval = `tex${`t`}${string}`;
 
   export interface I extends Record<
     `/(?<val>text{1,3})/`,
@@ -104,7 +104,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_8 {
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_9 {
   type T$0 = `${Tval}`;
-  type Tval = `tex${`t` | ''}`;
+  type Tval = `tex${''|`${`t`}${string}`}`;
 
   export interface I extends Record<
     `/(?<val>text{0,3})/`,
@@ -117,7 +117,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_9 {
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_10 {
   type T$0 = `${Tval}`;
-  type Tval = `tex${`t` | ''}`;
+  type Tval = `tex${''|`${`t`}${string}`}`;
 
   export interface I extends Record<
     `/(?<val>text{0,})/`,
@@ -130,7 +130,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_10 {
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_11 {
   type T$0 = `${Tval}`;
-  type Tval = `tex${`t` | ''}`;
+  type Tval = `tex${''|`${`t`}${string}`}`;
 
   export interface I extends Record<
     `/(?<val>text{,3})/`,
@@ -233,8 +233,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_18 {
 }
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_19 {
-  type T$0 = `${TnumStr}${string}${'\n' | ''}`;
-  type TnumStr = `${number}${string}`;
+  type T$0 = `${TnumStr}${string}${''|`${`\n`}${string}`}`;
+  type TnumStr = `${number}${string}${string}`;
 
   export interface I extends Record<
     `/(?<numStr>\\d+[amn]+)\\s\\n*/`,
@@ -246,8 +246,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_19 {
 }
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_20 {
-  type T$0 = `${TnumStr}${string}${'\n' | ''}`;
-  type TnumStr = `${number}${string}`;
+  type T$0 = `${TnumStr}${string}${''|`${`\n`}${string}`}`;
+  type TnumStr = `${number}${string}${string}`;
 
   export interface I extends Record<
     `/(?<numStr>\\d{1,3}[amn]+)\\s\\n*/`,
@@ -259,8 +259,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_20 {
 }
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_21 {
-  type T$0 = `${TnumStr}${string}${'\n' | ''}`;
-  type TnumStr = `${number}${string}`;
+  type T$0 = `${TnumStr}${string}${''|`${`\n`}${string}`}`;
+  type TnumStr = `${number}${string}${string}`;
 
   export interface I extends Record<
     `/(?<numStr>\\d{1,}[amn]+)\\s\\n*/`,
@@ -272,8 +272,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_21 {
 }
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_22 {
-  type T$0 = `${TnumStr}${string}${'\n' | ''}`;
-  type TnumStr = `${number | ''}${string}`;
+  type T$0 = `${TnumStr}${string}${''|`${`\n`}${string}`}`;
+  type TnumStr = `${number | ''}${string}${string}`;
 
   export interface I extends Record<
     `/(?<numStr>\\d{0,3}[amn]+)\\s\\n*/`,
@@ -285,8 +285,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_22 {
 }
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_23 {
-  type T$0 = `${TnumStr}${string}${'\n' | ''}`;
-  type TnumStr = `${number | ''}${string}`;
+  type T$0 = `${TnumStr}${string}${''|`${`\n`}${string}`}`;
+  type TnumStr = `${number | ''}${string}${string}`;
 
   export interface I extends Record<
     `/(?<numStr>\\d{,3}[amn]+)\\s\\n*/`,
@@ -298,8 +298,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_23 {
 }
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_24 {
-  type T$0 = `${TnumStr}${string}${'\n' | ''}`;
-  type TnumStr = `${number | ''}${string}`;
+  type T$0 = `${TnumStr}${string}${''|`${`\n`}${string}`}`;
+  type TnumStr = `${number | ''}${string}${string}`;
 
   export interface I extends Record<
     `/(?<numStr>\\d?[amn]+)\\s\\n*/`,
@@ -311,8 +311,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_24 {
 }
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_25 {
-  type T$0 = `${TnumStr}${string}${'\n' | ''}`;
-  type TnumStr = `${number | ''}${string}`;
+  type T$0 = `${TnumStr}${string}${''|`${`\n`}${string}`}`;
+  type TnumStr = `${number | ''}${string}${string}`;
 
   export interface I extends Record<
     `/(?<numStr>\\d*[amn]+)\\s\\n*/`,
@@ -325,7 +325,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_25 {
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_26 {
   type T$0 = `${TconNum}`;
-  type TconNum = `text ${number}${'\n' | ''}`;
+  type TconNum = `text ${number}${''|`${`\n`}${string}`}`;
 
   export interface I extends Record<
     `/(?<conNum>text \\d\\n*)/`,
@@ -532,6 +532,50 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_41 {
 }
 
 namespace Nc1e1ffc130aead13aa199b62448b178c_42 {
+  type T$0 = `${`t` | ''}`;
+
+  export interface I extends Record<
+    `/t?/`,
+    {
+      $0: T$0
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_43 {
+  type T$0 = `${`t`}${string}`;
+
+  export interface I extends Record<
+    `/t+/`,
+    {
+      $0: T$0
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_44 {
+  type T$0 = `${''|`${`t`}${string}`}${number}`;
+
+  export interface I extends Record<
+    `/t*\\d/`,
+    {
+      $0: T$0
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_45 {
+  type T$0 = `${`t`}${string}`;
+
+  export interface I extends Record<
+    `/t{1,3}/`,
+    {
+      $0: T$0
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_46 {
   type T$0 = `${Tnum}${Tbum}`;
   type Tnum = `${number}`;
   type Tbum = `aa`;
@@ -546,7 +590,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_42 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_43 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_47 {
   type T$0 = `${Ttxt}`;
   type Ttxt = `5` | `${number}`;
 
@@ -559,7 +603,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_43 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_44 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_48 {
   type T$0 = `${Ttxt}`;
   type Ttxt = `a\\\\\\\\|b` | `c` | `${`d` | ''}`;
 
@@ -572,7 +616,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_44 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_45 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_49 {
   type T$0 = `${Ttxt}`;
   type Ttxt = `a` | `s` | `f\\\\\\\\` | `b` | `c${number}` | `d` | `${string}`;
 
@@ -585,7 +629,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_45 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_46 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_50 {
   type T$0 = `${Toptional1 | ''}` | `${Toptional2 | ''}${Treq | ''}`;
   type Toptional1 = `opt1` | `opt`;
   type Toptional2 = `opt2`;
@@ -602,7 +646,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_46 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_47 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_51 {
   type T$0 = `${Tnum}`;
   type Tnum = `${number}`;
 
@@ -615,7 +659,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_47 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_48 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_52 {
   type T$0 = `${Tnum}`;
   type Tnum = `1` | `2`;
 
@@ -628,7 +672,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_48 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_49 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_53 {
   type T$0 = `${Tr}`;
   type Tr = `12${Topt | ''}` | `${Topt1 | ''}`;
   type Topt = ``;
@@ -645,9 +689,9 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_49 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_50 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_54 {
   type T$0 = `\\\\${Tstr}${T$2}${T$3}`;
-  type Tstr = `${string}\${`;
+  type Tstr = `${string}${string}\${`;
   type T$2 = `\\\\ ${number}${string}`;
   type T$3 = `${T$4 | ''}` | `${T$5 | ''}`;
   type T$4 = `${number}{3,\${txt}\\${string}`;
@@ -666,8 +710,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_50 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_51 {
-  type T$0 = `${`(` | ''}<!>${string}\${)${T$1}${string}${T$2}${Tname1}${string}`;
+namespace Nc1e1ffc130aead13aa199b62448b178c_55 {
+  type T$0 = `${`(` | ''}<!>${string}${string}\${)${T$1}${string}${T$2}${Tname1}${string}`;
   type T$1 = `${string} ${number}${string}`;
   type T$2 = `${T$3 | ''}` | `${T$4 | ''}`;
   type T$3 = `${number}{3,\${txt}\\${string}`;
@@ -693,14 +737,14 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_51 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_52 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_56 {
   type T$0 = `${T$0th} ${string}in zero`;
   type T$0th = `${T$1th}${T$4}${T$3th}\\\\\\\\\\\\|\\\${ ${`(` | ''}<4>${T$5th})`;
   type T$1th = `${T$2nd}`;
   type T$2nd = ``;
   type T$4 = `nonamϭϰe` | ` `;
   type T$3th = `${number}`;
-  type T$5th = ` ${string}${T$6th}Ϩ`;
+  type T$5th = `${` `}${string}${T$6th}Ϩ`;
   type T$6th = `${T$7th}${T$10}{${number | ''}}${T$11}{,}`;
   type T$7th = `${T$8th}`;
   type T$8th = ``;
@@ -726,7 +770,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_52 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_53 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_57 {
   type T$0 = `${T$0th}${T$2}`;
   type T$0th = ` ` | `sds `;
   type T$2 = `noname` | ``;
@@ -741,20 +785,20 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_53 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_54 {
-  type T$0 = `${Tbefore}${TbeforeSpaces}${Thashes}${TblockHashPosition}${Tassociations}${` ` | ''}${Tinfo}${TbeforeCommentSpaces}${Tcomment}${U1}`;
-  type Tbefore = `` | `\n`;
-  type TbeforeSpaces = `${` ` | ''}`;
-  type Thashes = `#${string}`;
+namespace Nc1e1ffc130aead13aa199b62448b178c_58 {
+  type T$0 = `${Tbefore}${TbeforeSpaces}${Thashes}${TblockHashPosition}${Tassociations}${''|`${` `}${string}`}${Tinfo}${TbeforeCommentSpaces}${Tcomment}${U1}`;
+  type Tbefore = `` | `${`\n`}`;
+  type TbeforeSpaces = `${''|`${` `}${string}`}`;
+  type Thashes = `${`#`}${string}`;
   type TblockHashPosition = `${string}`;
   type Tassociations = `${`_` | ''}${TsecretWidStr}${Tmodificators}`;
-  type TsecretWidStr = `${string | ''}`;
+  type TsecretWidStr = `${''|`${string}${string}`}`;
   type Tmodificators = `${`!` | ''}`;
   type Tinfo = `[${TblockHeader}]`;
-  type TblockHeader = `${string}`;
-  type TbeforeCommentSpaces = `${` ` | ''}`;
-  type Tcomment = `${string}`;
-  type U1 = `\n${` ` | ''}#` | ``;
+  type TblockHeader = `${string}${string}`;
+  type TbeforeCommentSpaces = `${''|`${` `}${string}`}`;
+  type Tcomment = `${string}${string}`;
+  type U1 = ''; // `${`\n`}${''|`${` `}${string}`}#` | ``;
 
   export interface I extends Record<
     `/(?<before>^|\\n)(?<beforeSpaces> *)(?<hashes>#{1,2})(?<blockHashPosition>${string})(?<associations>_?(?<secretWidStr>[${string}]*)(?<modificators>!?))? *(?<info>\\[(?<blockHeader>.+?)\\])?(?<beforeCommentSpaces> *)(?<comment>[\\w\\W]+?)(?=\\n *#|$)/g`,
@@ -775,21 +819,21 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_54 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_55 {
-  type T$0 = `${Tbookn}${string | ''}${T$4}`;
-  type Tbookn = `${number | ''}${U1 | ''}`;
-  type T$2 = `${string | ''}${T$3 | ''}`;
-  type T$3 = `${string}`;
+namespace Nc1e1ffc130aead13aa199b62448b178c_59 {
+  type T$0 = `${Tbookn}${''|`${string}${string}`}${T$4}`;
+  type Tbookn = `${number | ''}${U1}`;
+  type T$2 = `${''|`${string}${string}`}${T$3 | ''}`;
+  type T$3 = `${string}${string}`;
   type T$4 = `${TchapterStr}${T$6}`;
   type TchapterStr = `${number}`;
-  type T$6 = `${T$7}${TverseStr}${T$9}${U3 | ''}`;
-  type T$7 = `:` | `${string}`;
-  type TverseStr = `${U2 | ''}`;
-  type T$9 = `${string | ''}${TverseSeparator}${string | ''}`;
+  type T$6 = `${T$7}${TverseStr}${T$9}${U3}`;
+  type T$7 = `:` | `${string}${string}`;
+  type TverseStr = `${U2}`;
+  type T$9 = `${''|`${string}${string}`}${TverseSeparator}${''|`${string}${string}`}`;
   type TverseSeparator = `${string | ''}`;
-  type U1 = undefined & `${T$2 | ''}`;
-  type U2 = undefined & `${number}`;
-  type U3 = undefined & `finishVerseStr>${number}`;
+  type U1 = ''; // undefined & `${T$2 | ''}`;
+  type U2 = ''; // undefined & `${number}`;
+  type U3 = ''; // undefined & `finishVerseStr>${number}`;
 
   export interface I extends Record<
     `/(?<bookn>\\d?(?!(\\s*([а-яё]+))))\\s*((?<chapterStr>\\d{1,3})((:|\\s+)(?<verseStr>(?!\\d{1,3}))(\\s*(?<verseSeparator>[-,]?)\\s*)(?<!finishVerseStr>\\d{1,3})?)?)?/i`,
@@ -809,13 +853,13 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_55 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_56 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_60 {
   type T$0 = `${U1}${T$3} `;
-  type T$1 = `${U2 | ''} `;
-  type T$2 = `ababa${string}`;
+  type T$1 = `${U2} `;
+  type T$2 = `abab${`a`}${string}`;
   type T$3 = `jaja`;
   type U1 = `${T$1}`;
-  type U2 = undefined & `${T$2 | ''}`;
+  type U2 = ''; // undefined & `${T$2 | ''}`;
 
   export interface I extends Record<
     `/(?:((?!(ababa+?)) ))(jaja) /`,
@@ -828,13 +872,13 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_56 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_57 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_61 {
   type T$0 = `${U1}${string}${T$3} `;
-  type T$1 = `${U2 | ''} `;
-  type T$2 = `ababa${string}`;
+  type T$1 = `${U2} `;
+  type T$2 = `abab${`a`}${string}`;
   type T$3 = `job`;
   type U1 = `${T$1}`;
-  type U2 = undefined & `${T$2 | ''}`;
+  type U2 = ''; // undefined & `${T$2 | ''}`;
 
   export interface I extends Record<
     `/(?:((?!(ababa+?)) ))[|](job) /`,
@@ -847,16 +891,16 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_57 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_58 {
-  type T$0 = `${Tname}${U1}${T$2}${U2}${Tname1}${U3}${T$4}${U4 | ''}`;
+namespace Nc1e1ffc130aead13aa199b62448b178c_62 {
+  type T$0 = `${Tname}${U1}${T$2}${U2}${Tname1}${U3}${T$4}${U4}`;
   type Tname = `n`;
   type T$2 = `2`;
   type Tname1 = `n1`;
   type T$4 = `4`;
   type U1 = `just 1`;
-  type U2 = `just 2`;
-  type U3 = `just 3`;
-  type U4 = undefined & `just 4`;
+  type U2 = ''; // `just 2`;
+  type U3 = ''; // `just 3`;
+  type U4 = ''; // undefined & `just 4`;
 
   export interface I extends Record<
     `/(?<name>n)(?:just 1)(2)(?im-s:just 2)?(?<name1>n1)(?<=just 3)(4)(?<!just 4)/i`,
@@ -870,7 +914,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_58 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_59 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_63 {
   type T$0 = `${T$1}${T$1}`;
   type T$1 = `^`;
 
@@ -883,7 +927,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_59 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_60 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_64 {
   type T$0 = `${T$1}${T$1}`;
   type T$1 = `$`;
 
@@ -896,7 +940,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_60 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_61 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_65 {
   type T$0 = `${T$1}\x02`;
   type T$1 = `\\\\`;
 
@@ -909,7 +953,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_61 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_62 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_66 {
   type T$0 = `${U1}${T$1th}${U2}${Ta}${string}${U3}${T$3}${U4}{}${T$4}`;
   type T$1th = `first`;
   type Ta = ` `;
@@ -932,7 +976,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_62 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_63 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_67 {
   type T$0 = `${U1}${T$1}${Tavva}${string}${U2} {}${Tavvva}`;
   type T$1 = `FF`;
   type Tavva = ` JJJ`;
@@ -951,14 +995,14 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_63 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_64 {
-  type T$0 = `${U1 | ''}${T$1}${U2 | ''}${Ta}${string}${U3}${T$3}${U4}{}${T$4}`;
+namespace Nc1e1ffc130aead13aa199b62448b178c_68 {
+  type T$0 = `${U1}${T$1}${U2}${Ta}${string}${U3}${T$3}${U4}{}${T$4}`;
   type T$1 = ``;
   type Ta = ` `;
   type T$3 = `888=BBB`;
   type T$4 = `${Ta}`;
-  type U1 = undefined & `&&`;
-  type U2 = undefined & ` %%%`;
+  type U1 = ''; // undefined & `&&`;
+  type U2 = ''; // undefined & ` %%%`;
   type U3 = ``;
   type U4 = ` `;
 
@@ -974,7 +1018,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_64 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_65 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_69 {
   type T$0 = `${T$1}a${string}a${T$1}`;
   type T$1 = `${string}.`;
 
@@ -987,7 +1031,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_65 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_66 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_70 {
   type T$0 = `${T$1}\\\\${T$1}`;
   type T$1 = `%`;
 
@@ -1000,7 +1044,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_66 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_67 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_71 {
   type T$0 = `${T$1}\\\\${T$1}`;
   type T$1 = `\\${string}`;
 
@@ -1013,7 +1057,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_67 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_68 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_72 {
   type T$0 = `${T$1}\\\\${T$1}`;
   type T$1 = `\\\\${string}[${string}`;
 
@@ -1026,7 +1070,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_68 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_69 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_73 {
   type T$0 = `${T$1}\\\\${T$1}`;
   type T$1 = `\\\\${string}`;
 
@@ -1039,7 +1083,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_69 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_70 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_74 {
   type T$0 = `${T$1}\\\\${T$1}`;
   type T$1 = `\\\${2}`;
 
@@ -1052,7 +1096,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_70 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_71 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_75 {
   type T$0 = `${T$1}\\\\${T$1}`;
   type T$1 = `${string}`;
 
@@ -1065,7 +1109,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_71 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_72 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_76 {
   type T$0 = `${T$1}\\\\${T$1 | ''}`;
   type T$1 = `\\\${2}`;
 
@@ -1078,12 +1122,12 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_72 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_73 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_77 {
   type T$0 = `${Tnnn}\\\\${Tnnn | ''} \\${Tnnn} `;
   type Tnnn = `\\\${n}`;
 
   export interface I extends Record<
-    `/(?<nnn>\\\${n})\\\\\\<nnn>? \\\\<nnn> /g`,
+    `/(?<nnn>\\\${n})\\\\\\k<nnn>? \\\\<nnn> /g`,
     {
       $0: T$0;
       nnn: Tnnn
@@ -1091,7 +1135,20 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_73 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_74 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_78 {
+  type T$0 = `${Ta}${Ta}`;
+  type Ta = `\\\${2}`;
+
+  export interface I extends Record<
+    `/(?<a>\\\${2})\\k<a>/g`,
+    {
+      $0: T$0;
+      a: Ta
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_79 {
   type T$0 = `${T$1}\\\\${T$1}`;
   type T$1 = `\\\\${string}3}`;
 
@@ -1104,9 +1161,9 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_74 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_75 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_80 {
   type T$0 = `${T$1}${string}\\${string}\\${string}`;
-  type T$1 = `[\\${`\\ ` | ''}`;
+  type T$1 = `[\\${''|`${`\\ `}${string}`}`;
 
   export interface I extends Record<
     `/(\\[^\\\\ *)\\W\\\\s\\S\\\\S/g`,
@@ -1117,7 +1174,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_75 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_76 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_81 {
   type T$0 = `${T$1}\\\\${T$1}`;
   type T$1 = `${string}4}`;
 
@@ -1130,7 +1187,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_76 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_77 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_82 {
   type T$0 = ``;
 
   export interface I extends Record<
@@ -1141,7 +1198,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_77 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_78 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_83 {
   type T$0 = `${T$1}${T$1}`;
   type T$1 = `${string}6}`;
 
@@ -1154,8 +1211,8 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_78 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_79 {
-  type T$0 = `\n`;
+namespace Nc1e1ffc130aead13aa199b62448b178c_84 {
+  type T$0 = `${`\n`}`;
 
   export interface I extends Record<
     `/\\n/g`,
@@ -1165,7 +1222,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_79 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_80 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_85 {
   type T$0 = `_\` ${T$1}`;
   type T$1 = ``;
 
@@ -1178,7 +1235,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_80 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_81 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_86 {
   type T$0 = `${string}`;
 
   export interface I extends Record<
@@ -1189,7 +1246,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_81 {
   > { '': '' }
 }
 
-namespace Nc1e1ffc130aead13aa199b62448b178c_82 {
+namespace Nc1e1ffc130aead13aa199b62448b178c_87 {
   type T$0 = `${U1}${T$1}c${T$2}`;
   type T$1 = `b`;
   type T$2 = ``;
@@ -1200,6 +1257,204 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_82 {
     {
       $0: T$0;
       $1?: T$1;
+      $2: T$2
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_88 {
+  type T$0 = `${T$1}${T$1}`;
+  type T$1 = `a`;
+
+  export interface I extends Record<
+    `/\\1(a)/`,
+    {
+      $0: T$0;
+      $1: T$1
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_89 {
+  type T$0 = `${Tself}${Tself}`;
+  type Tself = `s`;
+
+  export interface I extends Record<
+    `/\\k<self>(?<self>s)/`,
+    {
+      $0: T$0;
+      self: Tself
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_90 {
+  type T$0 = `${Tself}`;
+  type Tself = ``;
+
+  export interface I extends Record<
+    `/(?<self>)/`,
+    {
+      $0: T$0;
+      self: Tself
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_91 {
+  type T$0 = `${U1}c`;
+  type T$1 = `a`;
+  type T$2 = `b`;
+  type U1 = ''; // `${T$1}${T$2}`;
+
+  export interface I extends Record<
+    `/(?<=(a)(b))c/`,
+    {
+      $0: T$0;
+      $1: T$1;
+      $2: T$2
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_92 {
+  type T$0 = `${U1}c`;
+  type T$1 = `${string}`;
+  type U1 = ''; // `${T$1}`;
+
+  export interface I extends Record<
+    `/(?<=([ab])+)c/`,
+    {
+      $0: T$0;
+      $1: T$1
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_93 {
+  type T$0 = `c${U1}`;
+  type T$1 = `ab`;
+  type U1 = ''; // `${T$1}`;
+
+  export interface I extends Record<
+    `/c(?=(ab))/`,
+    {
+      $0: T$0;
+      $1: T$1
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_94 {
+  type T$0 = `${U1}${U2}`;
+  type T$1 = `a`;
+  type T$2 = `ab`;
+  type T$3 = `c`;
+  type T$4 = `bc`;
+  type U1 = `${T$1 | ''}` | `${T$2 | ''}`;
+  type U2 = `${T$3 | ''}` | `${T$4 | ''}`;
+
+  export interface I extends Record<
+    `/(?:(a)|(ab))(?:(c)|(bc))/`,
+    {
+      $0: T$0;
+      $1?: T$1;
+      $2?: T$2;
+      $3?: T$3;
+      $4?: T$4
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_95 {
+  type T$0 = `WORD`;
+
+  export interface I extends Record<
+    `/\\bWORD\\B/`,
+    {
+      $0: T$0
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_96 {
+  type T$0 = `${U1}${''|`${`a`}${string}`}b${T$1}`;
+  type T$1 = `${`a`}${string}`;
+  type U1 = ''; // `${T$1}`;
+
+  export interface I extends Record<
+    `/(?=(a+))a*b\\1/`,
+    {
+      $0: T$0;
+      $1: T$1
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_97 {
+  type T$0 = `${U1}b`;
+  type U1 = ''; // `a`;
+
+  export interface I extends Record<
+    `/(?=a)?b/`,
+    {
+      $0: T$0
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_98 {
+  type T$0 = `${U1}`;
+  type T$1 = `${string}${string}`;
+  type T$2 = `${string}${string}`;
+  type U1 = ''; // `${T$1}${T$2}`;
+
+  export interface I extends Record<
+    `/(?<=([ab]+)([bc]+))$/`,
+    {
+      $0: T$0;
+      $1: T$1;
+      $2: T$2
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_99 {
+  type T$0 = `${U1}${number}${U2}`;
+  type U1 = ''; // `$`;
+  type U2 = `.${number | ''}`;
+
+  export interface I extends Record<
+    `/(?<=\\$)\\d+(?:\\.\\d*)?/`,
+    {
+      $0: T$0
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_100 {
+  type T$0 = `.${U1}`;
+  type U1 = `png` | `jp${`e` | ''}g` | `gif`;
+
+  export interface I extends Record<
+    `/\\.(?:png|jpe?g|gif)$/i`,
+    {
+      $0: T$0
+    }
+  > { '': '' }
+}
+
+namespace Nc1e1ffc130aead13aa199b62448b178c_101 {
+  type T$0 = `${U1}=${T$1}${T$2}${T$1}`;
+  type T$1 = `${string}`;
+  type T$2 = `${string | ''}`;
+  type U1 = `title` | `name`;
+
+  export interface I extends Record<
+    `/(?:title|name)=(["'])(.*?)\\1/`,
+    {
+      $0: T$0;
+      $1: T$1;
       $2: T$2
     }
   > { '': '' }
@@ -1287,6 +1542,25 @@ interface _GlobalScopedNamedRegExpMakerGeneratedTypes
     Nc1e1ffc130aead13aa199b62448b178c_79.I,
     Nc1e1ffc130aead13aa199b62448b178c_80.I,
     Nc1e1ffc130aead13aa199b62448b178c_81.I,
-    Nc1e1ffc130aead13aa199b62448b178c_82.I {
+    Nc1e1ffc130aead13aa199b62448b178c_82.I,
+    Nc1e1ffc130aead13aa199b62448b178c_83.I,
+    Nc1e1ffc130aead13aa199b62448b178c_84.I,
+    Nc1e1ffc130aead13aa199b62448b178c_85.I,
+    Nc1e1ffc130aead13aa199b62448b178c_86.I,
+    Nc1e1ffc130aead13aa199b62448b178c_87.I,
+    Nc1e1ffc130aead13aa199b62448b178c_88.I,
+    Nc1e1ffc130aead13aa199b62448b178c_89.I,
+    Nc1e1ffc130aead13aa199b62448b178c_90.I,
+    Nc1e1ffc130aead13aa199b62448b178c_91.I,
+    Nc1e1ffc130aead13aa199b62448b178c_92.I,
+    Nc1e1ffc130aead13aa199b62448b178c_93.I,
+    Nc1e1ffc130aead13aa199b62448b178c_94.I,
+    Nc1e1ffc130aead13aa199b62448b178c_95.I,
+    Nc1e1ffc130aead13aa199b62448b178c_96.I,
+    Nc1e1ffc130aead13aa199b62448b178c_97.I,
+    Nc1e1ffc130aead13aa199b62448b178c_98.I,
+    Nc1e1ffc130aead13aa199b62448b178c_99.I,
+    Nc1e1ffc130aead13aa199b62448b178c_100.I,
+    Nc1e1ffc130aead13aa199b62448b178c_101.I {
     '': ''
 }

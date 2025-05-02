@@ -15,7 +15,7 @@ export class TransformProcess {
   stringStubSymbol = StubSymbol.def;
   numberStubSymbol = StubSymbol.def;
   optionalNumberStubSymbol = StubSymbol.def;
-  stringTemplateStubSymbol = StubSymbol.def;
+  emptyStubSymbol = StubSymbol.def;
   unionStubSymbol = StubSymbol.def;
   optionalStubSymbol = StubSymbol.def;
   untemplatedStubSymbol = StubSymbol.def;
@@ -47,7 +47,7 @@ export class TransformProcess {
     this.stringStubSymbol = makeStub();
     this.optionalNumberStubSymbol = makeStub();
     this.numberStubSymbol = makeStub();
-    this.stringTemplateStubSymbol = makeStub();
+    this.emptyStubSymbol = makeStub();
     this.slashStubSymbol = makeStub();
     this.escapeStubSymbol = makeStub();
     this.openParenthesisStubSymbol = makeStub();
@@ -269,7 +269,9 @@ export class TransformProcess {
         } else {
           const typeName = this.makeUncountableGroupTypeName(groupInfo.groupName);
 
-          uncountableGroupPartTypes.push(`type ${typeName} = ${typeContent};`);
+          if (!groupInfo.isCountable && groupInfo.groupKey !== ':') {
+            uncountableGroupPartTypes.push(`type ${typeName} = ''; // ${typeContent};`);
+          } else uncountableGroupPartTypes.push(`type ${typeName} = ${typeContent};`);
         }
       });
 
@@ -279,11 +281,10 @@ export class TransformProcess {
       registeredTypeKeysSet.add(typeKey);
 
       namespaces.push(
-        `namespace ${this.makeNamespaceTypeName('', namespaces.length)} {\n  ${groupTypeParts
-          .concat(uncountableGroupPartTypes)
-          .join(
-            '\n  ',
-          )}\n\n  export interface I extends Record<\n    ${typeKey},\n    {\n      ${recordFieldsTypes.join(
+        `namespace ${this.makeNamespaceTypeName('', namespaces.length)} {\n  ${
+          groupTypeParts.concat(uncountableGroupPartTypes).join('\n  ')
+          //
+        }\n\n  export interface I extends Record<\n    ${typeKey},\n    {\n      ${recordFieldsTypes.join(
           ';\n      ',
         )}\n    }\n  > { '': '' }\n}`,
       );
@@ -314,12 +315,12 @@ export class TransformProcess {
     return `\`/${
       regStr
         .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '\\\\|')
+        .replace(makeRegExp(`/${this.escapeStubSymbol}{2}([bB])/g`), '\\\\$1')
         .replace(makeRegExp(`/[${this.slashStubSymbol}${this.escapeStubSymbol}]/g`), '\\')
         .replace(makeRegExp(`/${this.untemplatedStubSymbol}/g`), '\\${')
         .replace(makeRegExp(`/${this.stringStubSymbol}/g`), '${string}')
         .replace(makeRegExp(`/${this.openParenthesisStubSymbol}{3}/g`), '\\\\(')
         .replace(makeRegExp(`/${this.closeParenthesisStubSymbol}{3}/g`), '\\\\)')
-
       //
     }/${regFlags}\``;
   };
@@ -422,17 +423,14 @@ export class TransformProcess {
     let content = groupInfo.groupContent.replace(makeRegExp(`/(?<!${this.escapeStubSymbol})(?:[$^])/g`), '');
 
     content = content.replace(
-      makeRegExp(`/\\\\{2}(?:(\\d{1,2})|<([\\w$_]+)>)(${this.quantifierRegStr}|)/g`),
-      (all, linkNumber: string | undefined, linkName: string | undefined, quantifier: string) => {
-        let linkTypeName: string | null = null;
-
-        let isOptionalLink: boolean | null = null;
-
+      makeRegExp(`/\\\\{2}(?:(\\d+)|k?<([\\w$_]+)>)(${this.quantifierRegStr}|)/g`),
+      (all, linkNumber: string | undefined, linkName: string | undefined, quantifier: string, linkIndex: number) => {
         if (!linkNumber && !linkName) return all;
 
+        let linkTypeName: string | null = null;
         let linkGroupName = groupInfo.groupName;
 
-        isOptionalLink =
+        const isOptionalLink =
           this.checkIsOptionalQuantifier(quantifier) ||
           groupInfo.isOpt ||
           groupInfo.isOptChildren ||
@@ -440,18 +438,23 @@ export class TransformProcess {
 
         if (linkNumber) {
           if (`$${linkNumber}` in groupNameToSymbolDict) {
-            linkGroupName = wholeGroupSymbolToInfoDict[groupNameToSymbolDict[`$${linkNumber}` as GroupName]].groupName;
+            const linkTargetGroupSymbol = groupNameToSymbolDict[`$${linkNumber}` as GroupName];
+            const linkTargetGroupInfo = wholeGroupSymbolToInfoDict[linkTargetGroupSymbol];
+
+            linkGroupName = linkTargetGroupInfo.groupName;
           } else {
-            const groupSymbolByLinkNumber = countableGroupSymbols[+linkNumber - 1];
+            const linkTargetGroupSymbol = countableGroupSymbols[+linkNumber - 1];
 
-            if (groupSymbolByLinkNumber !== undefined) {
-              const groupInfo = wholeGroupSymbolToInfoDict[groupSymbolByLinkNumber];
+            if (linkTargetGroupSymbol !== undefined) {
+              const linkGroupInfo = wholeGroupSymbolToInfoDict[linkTargetGroupSymbol];
 
-              linkTypeName = this.makeGroupTypeName(groupInfo.groupName);
+              linkTypeName = this.makeGroupTypeName(linkGroupInfo.groupName);
             } else return `\\x${linkNumber.padStart(2, '0')}`;
           }
         } else if (linkName) {
-          linkGroupName = wholeGroupSymbolToInfoDict[groupNameToSymbolDict[linkName as GroupName]].groupName;
+          const linkTargetGroupSymbol = groupNameToSymbolDict[linkName as GroupName];
+
+          linkGroupName = wholeGroupSymbolToInfoDict[linkTargetGroupSymbol].groupName;
         }
 
         linkTypeName ??= this.makeGroupTypeName(linkGroupName);
@@ -464,16 +467,21 @@ export class TransformProcess {
       const currentGroupInfo = wholeGroupSymbolToInfoDict[currentGroupSymbol] as GroupInfo | undefined;
       if (currentGroupInfo === undefined) continue;
 
-      // if (wholeGroupSymbolToInfoDict[currentGroupSymbol] && (currentGroupSymbol as never) !== groupInfo.groupSymbol) {
-      //   wholeGroupSymbolToInfoDict[currentGroupSymbol].parent = groupInfo;
-      // }
-
       content = content.replace(makeRegExp(`/${currentGroupSymbol}+/g`), () => {
+        // if (
+        //   !currentGroupInfo.isCountable &&
+        //   (currentGroupInfo.groupKey === '<=' || currentGroupInfo.groupKey === '=')
+        // ) {
+        //   return "${''}";
+        // }
+
         const typeText = currentGroupInfo.isCountable
           ? this.makeGroupTypeName(currentGroupInfo.groupName)
           : this.makeUncountableGroupTypeName(currentGroupInfo.groupName);
 
-        const optionalSign = currentGroupInfo.isOpt || currentGroupInfo.isNever ? this.optionalStubSymbol : '';
+        // console.log(currentGroupInfo);
+
+        const optionalSign = currentGroupInfo.isOpt ? this.optionalStubSymbol : '';
 
         return `\${${typeText}${optionalSign}}`;
       });
@@ -486,23 +494,19 @@ export class TransformProcess {
         .replace(makeRegExp(`/(?<!${this.escapeStubSymbol})\\.+/g`), this.stringStubSymbol)
         .replace(makeRegExp(`/\\\\{2}(\\w)(${this.quantifierRegStr}|)/g`), (_all, char, quantifier) => {
           if (char === 'n') {
-            return this.checkIsOptionalQuantifier(quantifier) ? `\${'\\n'${this.optionalStubSymbol}}` : '\\n';
+            return this.insertOptionalChar(quantifier, `\`\\n\``);
           }
 
-          return this.checkIsOptionalQuantifier(quantifier)
-            ? `\${string${this.optionalStubSymbol}}`
-            : this.stringStubSymbol;
+          return this.insertOptionalChar(quantifier, 'string', this.stringStubSymbol);
         })
         .replace(makeRegExp(`/${this.slashStubSymbol}/g`), '\\')
+        .replace(makeRegExp(`/${this.escapeStubSymbol}{2}([bB])/g`), '')
         .replace(makeRegExp(`/${this.escapeStubSymbol}+/g`), '')
         .replace(makeRegExp(`/((?:\\\\\\\\)?[^\\\`])(${this.quantifierRegStr})/g`), (all, char, quantifier) =>
-          this.checkIsOptionalQuantifier(quantifier) ? `\${\`${char}\`${this.optionalStubSymbol}}` : all,
+          this.insertOptionalChar(quantifier, `\`${char}\``, all),
         )
-        // .replace(makeRegExp(`/(?:(\\\\+)[ws]|\\.)(${this.quantifierRegStr}|)/g`), (all, slashes) => {
-        //   return slashes === undefined ? '${string}' : this.checkIs4xSlashes(slashes) ? '${string}' : all;
-        // })
         .replace(makeRegExp(`/([^\\\\])(${this.quantifierRegStr})/g`), (_all, char, quantifier) =>
-          this.checkIsOptionalQuantifier(quantifier) ? this.stringStubSymbol : `${char}${this.stringStubSymbol}`,
+          this.insertOptionalChar(quantifier, `\`${char}\``),
         )
         .replace(makeRegExp(`/[${this.slashStubSymbol}${this.escapeStubSymbol}]/g`), '\\')
         .replace(makeRegExp(`/${this.untemplatedStubSymbol}/g`), '\\${')
@@ -510,6 +514,7 @@ export class TransformProcess {
         .join('` | `')
         .replace(makeRegExp(`/${this.unionStubSymbol}{3}/g`), '|')
         .replace(makeRegExp(`/${this.optionalStubSymbol}/g`), " | ''")
+        .replace(makeRegExp(`/${this.escapeStubSymbol}{2}[bB]/g`), '')
         .replace(makeRegExp(`/${this.stringStubSymbol}+/g`), '${string}')
         .replace(makeRegExp(`/${this.optionalNumberStubSymbol}/g`), `\${number | ''}`)
         .replace(makeRegExp(`/${this.numberStubSymbol}/g`), `\${number}`)
@@ -529,6 +534,22 @@ export class TransformProcess {
         quantifier.startsWith('{,') ||
         quantifier === '{0}')
     );
+  };
+
+  insertOptionalChar = (quantifier: string | undefined, char: string, orRequired?: string) => {
+    if (!quantifier || quantifier === '{1}') {
+      return orRequired ?? `\${${char}}`;
+    }
+
+    if (quantifier.startsWith('+')) return `\${${char}}\${string}`;
+    if (quantifier.endsWith('?')) return `\${${char}${this.optionalStubSymbol}}`;
+    if (quantifier.endsWith('*') || quantifier.startsWith('{0,') || quantifier.startsWith('{,')) {
+      return `\${''${this.unionStubSymbol.repeat(3)}\`\${${char}}${this.stringStubSymbol}\`}`;
+    }
+
+    if (quantifier === '{0}') return '';
+
+    return orRequired ?? `\${${char}}${this.stringStubSymbol}`;
   };
 
   checkIsGroupOptional = (groupStr: string) => !!groupStr.match(makeRegExp('/(?:[*?]|{(?:|0),\\d*})\\??$/'));
@@ -563,10 +584,16 @@ export class TransformProcess {
   };
 
   replaceEscapeds = (regStr: string) => {
+    regStr = regStr.replace(makeRegExp('/(\\\\+?)([bB])/g'), (all, slashes: string, text: string) => {
+      return this.checkIs4xSlashes(slashes)
+        ? all
+        : this.repeatWithoutNegatives('\\', slashes.length - 2) + this.escapeStubSymbol.repeat(2) + text;
+    });
+
     regStr = regStr.replace(makeRegExp('/(\\\\+?)[|]/g'), (all, slashes: string) => {
       return this.checkIs4xSlashes(slashes)
         ? all
-        : `${this.slashStubSymbol.repeat(slashes.length - 2)}${this.unionStubSymbol.repeat(3)}`;
+        : `${this.repeatWithoutNegatives(this.slashStubSymbol, slashes.length - 2)}${this.unionStubSymbol.repeat(3)}`;
     });
 
     regStr = regStr
@@ -576,7 +603,7 @@ export class TransformProcess {
             if (chars === '${') return this.slashStubSymbol.repeat(slashes.length) + chars;
             return this.slashStubSymbol.repeat(slashes.length) + this.untemplatedStubSymbol;
           } else {
-            return this.slashStubSymbol.repeat(slashes.length - 1) + this.untemplatedStubSymbol;
+            return this.repeatWithoutNegatives(this.slashStubSymbol, slashes.length - 1) + this.untemplatedStubSymbol;
           }
         }
 
@@ -585,7 +612,7 @@ export class TransformProcess {
         }
 
         if (!this.checkIs2xSlashes(slashes)) {
-          return this.slashStubSymbol.repeat(slashes.length - 1) + chars;
+          return this.repeatWithoutNegatives(this.slashStubSymbol, slashes.length - 1) + chars;
         }
 
         return this.escapeStubSymbol.repeat(slashes.length) + chars;
@@ -596,11 +623,11 @@ export class TransformProcess {
         }
 
         if (this.checkIs2xSlashes(slashes)) {
-          return this.slashStubSymbol.repeat(slashes.length - 2) + '\\\\' + chars;
+          return this.repeatWithoutNegatives(this.slashStubSymbol, slashes.length - 2) + '\\\\' + chars;
         }
 
         if (!this.checkIs2xSlashes(slashes)) {
-          return this.slashStubSymbol.repeat(slashes.length - 3) + '\\\\' + chars;
+          return this.repeatWithoutNegatives(this.slashStubSymbol, slashes.length - 3) + '\\\\' + chars;
         }
 
         return all;
@@ -609,14 +636,14 @@ export class TransformProcess {
         if (slashes.length < 3) return all;
 
         if (chars === '<') {
-          return this.slashStubSymbol.repeat(slashes.length - 2) + '\\\\' + chars;
+          return this.repeatWithoutNegatives(this.slashStubSymbol, slashes.length - 2) + '\\\\' + chars;
         }
 
         if (this.checkIs2xSlashes(slashes)) {
           return this.slashStubSymbol.repeat(slashes.length) + chars;
         }
 
-        return this.slashStubSymbol.repeat(slashes.length - 1) + chars;
+        return this.repeatWithoutNegatives(this.slashStubSymbol, slashes.length - 1) + chars;
       });
 
     regStr = regStr.replace(
@@ -640,6 +667,8 @@ export class TransformProcess {
 
     return regStr;
   };
+
+  repeatWithoutNegatives = (text: string, repeatCount: number) => text.repeat(repeatCount < 0 ? 0 : repeatCount);
 
   insertGroupsWithReplace = ({
     groups,
