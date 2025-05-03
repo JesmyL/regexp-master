@@ -3,8 +3,8 @@ import { PluginUtils } from './PluginUtils';
 import { TransformProcess } from './TransformProcess';
 import { regExpMasterVitePlugin as pluginMaker } from './model';
 
-export const regExpMasterVitePlugin: typeof pluginMaker = props => {
-  const pluginUtils = new PluginUtils(props);
+export const regExpMasterVitePlugin: typeof pluginMaker = pluginOptions => {
+  const pluginUtils = new PluginUtils(pluginOptions);
 
   return {
     name: 'regExpMasterVitePlugin',
@@ -28,7 +28,7 @@ export const regExpMasterVitePlugin: typeof pluginMaker = props => {
       }
 
       try {
-        const ut = new TransformProcess({
+        const ut = new TransformProcess(pluginOptions, {
           importNameMatch,
           content,
           fileMD5: md5(fileSrc),

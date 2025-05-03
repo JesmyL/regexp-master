@@ -1481,6 +1481,17 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_101 {
   > { '': '' }
 }
 
+namespace Nc1e1ffc130aead13aa199b62448b178c_102 {
+  type $0 = `${string} ${string} ${string} ${string}  `;
+
+  export interface I extends Record<
+    `/\\w \\W \\s \\S \\B \\b/`,
+    {
+      $0: $0
+    }
+  > { '': '' }
+}
+
 interface _GlobalScopedNamedRegExpMakerGeneratedTypes
   extends Nc1e1ffc130aead13aa199b62448b178c_1.I,
     Nc1e1ffc130aead13aa199b62448b178c_2.I,
@@ -1582,6 +1593,7 @@ interface _GlobalScopedNamedRegExpMakerGeneratedTypes
     Nc1e1ffc130aead13aa199b62448b178c_98.I,
     Nc1e1ffc130aead13aa199b62448b178c_99.I,
     Nc1e1ffc130aead13aa199b62448b178c_100.I,
-    Nc1e1ffc130aead13aa199b62448b178c_101.I {
+    Nc1e1ffc130aead13aa199b62448b178c_101.I,
+    Nc1e1ffc130aead13aa199b62448b178c_102.I {
     '': ''
 }

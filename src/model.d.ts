@@ -27,7 +27,10 @@ declare function makeNamedRegExp<R extends StrRegExp, Reg extends R extends keyo
 
 declare function makeRegExp(reg: StrRegExp, setLastIndexTo?: number): RegExp;
 
-export type PluginOptions = { srcDirName?: `/${string}` };
+export type PluginOptions = {
+  srcDirName?: `/${string}`;
+  collectClassCharactersMaxCount?: 'unlimited' | number;
+};
 
 declare function regExpMasterVitePlugin(options?: PluginOptions): {
   name: string;

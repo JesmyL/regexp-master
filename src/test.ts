@@ -226,6 +226,9 @@ getValue<{ $0: `.${'png' | 'gif' | 'jpeg' | 'jpg' | 'PNG' | 'GIF' | 'JPEG' | 'JP
   makeNamedRegExp(`/\\.(?:png|jpe?g|gif)$/i`).transform(arg),
 );
 getValue<{ $0: `${'title' | 'name'}=${string}` }>(makeNamedRegExp(`/(?:title|name)=(["'])(.*?)\\1/`).transform(arg));
+getValue<{ $0: `${string} ${string} ${string} ${string}  ` }>(
+  makeNamedRegExp(`/\\w \\W \\s \\S \\B \\b/`).transform(arg),
+);
 
 // todo:
 // \P{Script_Extensions=Latin}

@@ -1,5 +1,5 @@
-import { StrRegExpFlag } from 'model';
 import { makeRegExp } from './makeRegExp';
+import { PluginOptions, StrRegExpFlag } from './model';
 import { testMaker } from './test.maker';
 import { GroupInfo, GroupName, GroupStubSymbol, StubSymbol } from './types';
 
@@ -25,17 +25,14 @@ export class TransformProcess {
   openParenthesisStubSymbol = StubSymbol.def;
   closeParenthesisStubSymbol = StubSymbol.def;
 
-  flags: Record<StrRegExpFlag, boolean> = {
-    d: false,
-    g: false,
-    i: false,
-    m: false,
-    s: false,
-    u: false,
-    y: false,
-  };
+  flags = {} as Record<StrRegExpFlag, boolean>;
 
-  constructor(options: { importNameMatch: RegExpMatchArray; content: string; fileMD5: string }) {
+  constructor(
+    private pluginOptions: PluginOptions = {
+      collectClassCharactersMaxCount: 9,
+    },
+    options: { importNameMatch: RegExpMatchArray; content: string; fileMD5: string },
+  ) {
     this.fileMD5 = options.fileMD5;
     this.content = options.content;
 
