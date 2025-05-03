@@ -1,15 +1,18 @@
-import fs from 'fs';
 import md5 from 'md5';
 import nodeFs from 'node:fs';
+import * as fsp from 'node:fs/promises';
 import { Options } from './types';
 
-console.log('nodeFs.readFileSync', nodeFs);
+import nodePath from 'node:path';
+import nodeUrl from 'node:url';
+
+console.log('fsp', fsp);
+console.log('nodePath', nodePath);
+console.log('nodeUrl', nodeUrl);
 console.log('========================================================================');
-console.log('fs', fs);
-console.log('========================================================================');
-console.log('fs.keys', Object.keys(fs).slice(0, 20));
-console.log('========================================================================');
-console.log('nodeFs.keys', Object.keys(nodeFs).slice(0, 20));
+console.log('fsp.keys', Object.keys(fsp).slice(0, 20));
+console.log('nodeUrl.keys', Object.keys(nodeUrl).slice(0, 20));
+console.log('nodePath.keys', Object.keys(nodePath).slice(0, 20));
 
 export class PluginUtils {
   private fs: typeof import('fs');
