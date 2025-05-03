@@ -17,8 +17,6 @@ export class PluginUtils {
     this.generatesDir = `${this.dirName}${srcDirName === '/' ? '' : srcDirName}/regexp-master.gen` as const;
     this.knownFilesFilePath = `${this.generatesDir}/files.json` as const;
 
-    console.log([this.dirName, this.generatesDir, this.knownFilesFilePath]);
-
     let knownFiles: string[] = [];
 
     try {
