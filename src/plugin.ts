@@ -19,7 +19,7 @@ export const regExpMasterVitePlugin: typeof pluginMaker = props => {
         return;
       }
 
-      let content = await pluginUtils.readFileAsync(src);
+      let content = await pluginUtils.readFile(src);
       const importNameMatch = pluginUtils.matchImport(content);
 
       if (importNameMatch === null) {

@@ -1,13 +1,9 @@
 import md5 from 'md5';
-import nodeFs from 'node:fs';
 import fsp from 'node:fs/promises';
 import { Options } from './types';
 
-console.log('fsp.writeFile', fsp.writeFile);
-console.log('fsp.readFile', fsp.readFile);
-
 export class PluginUtils {
-  private fs: typeof import('fs');
+  private fs: typeof fsp;
 
   dirName: string = '.';
   generatesDir: string = '.';
@@ -18,7 +14,11 @@ export class PluginUtils {
   knownFilesFilePath: string = './files.json';
 
   constructor({ srcDirName = 'src', fs }: Options) {
-    this.fs = nodeFs;
+    console.log('fsp.writeFile', fsp.writeFile);
+    console.log('fsp.readFile', fsp.readFile);
+    console.log('process.cwd()', process.cwd());
+
+    this.fs = fsp;
     // this.dirName = __dirname.replace(/\\/g, '/');
     // if (this.dirName.endsWith(`/${srcDirName}`)) this.dirName = this.dirName.slice(0, -(srcDirName.length + 1));
 
@@ -48,30 +48,25 @@ export class PluginUtils {
   };
 
   saveKnownFiles = (_result: boolean | Set<string>) => {
-    this.fs.writeFileSync(this.knownFilesFilePath, JSON.stringify(Array.from(this.knownFilesSet).sort(), null, 4));
+    this.fs.writeFile(this.knownFilesFilePath, JSON.stringify(Array.from(this.knownFilesSet).sort(), null, 4));
   };
 
   fun = () => {};
   writeFileContent = (modelFilePath: string, content: string) => {
-    this.fs.writeFile(modelFilePath, content, this.fun);
+    this.fs.writeFile(modelFilePath, content);
   };
 
   removeKnownFile = (generatedTypeFilePath: string, fileSrc: string) => {
     try {
-      this.fs.unlinkSync(generatedTypeFilePath);
+      this.fs.unlink(generatedTypeFilePath);
     } catch (_error) {
       //
     }
     if (this.knownFilesSet.has(fileSrc)) this.saveKnownFiles(this.knownFilesSet.delete(fileSrc));
   };
 
-  readFileAsync = (src: string) => {
-    return new Promise<string>((resolve, reject) => {
-      this.fs.readFile(src, (error, contentBuffer) => {
-        if (error) reject(error);
-        else resolve(`${contentBuffer}`);
-      });
-    });
+  readFile = async (src: string) => {
+    return '' + (await this.fs.readFile(src));
   };
 
   importMatcherReg = /import \{\s*[\w\W]*?makeNamedRegExp(?:\s+as\s+([\\w_$]+))?[\w\W]*?}\s*from/;
