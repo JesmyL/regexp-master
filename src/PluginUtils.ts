@@ -6,7 +6,8 @@ import { Options } from './types';
 import nodePath from 'node:path';
 import nodeUrl from 'node:url';
 
-console.log('fsp', fsp);
+console.log('fsp.writeFile', fsp.writeFile);
+console.log('fsp.readFile', fsp.readFile);
 console.log('nodePath', nodePath);
 console.log('nodeUrl', nodeUrl);
 console.log('========================================================================');
