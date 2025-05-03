@@ -16,7 +16,7 @@ export class PluginUtils {
   constructor({ srcDirName = 'src', fs }: Options) {
     console.log('fsp', fsp);
     console.log('keys(fsp)', Object.keys(fsp));
-    console.log('fsp.default', Object.keys(fsp?.default || { nonono: 'NNOO' }));
+    console.log('fsp.default', Object.keys((fsp as any)?.default || { nonono: 'NNOO' }));
     console.log('process.cwd()', process.cwd());
 
     this.fs = fsp;
