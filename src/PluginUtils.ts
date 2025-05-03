@@ -1,7 +1,6 @@
-import fsm from 'fs';
+import fsExtra from 'fs-extra';
 import md5 from 'md5';
 import nodeFs from 'node:fs';
-import path from 'path';
 import { Options } from './types';
 
 export class PluginUtils {
@@ -17,31 +16,7 @@ export class PluginUtils {
 
   constructor({ srcDirName = 'src', fs }: Options) {
     try {
-      console.log('nodeFs.readdirSync', nodeFs.readdirSync('.'));
-    } catch (e) {
-      console.error('err', e);
-    }
-
-    try {
-      console.log('fsm.readdirSync', fsm.readdirSync('.'));
-    } catch (e) {
-      console.error('err', e);
-    }
-
-    try {
-      console.log('path.dirname(.)', path.dirname('.'));
-    } catch (e) {
-      console.error('err', e);
-    }
-
-    try {
-      console.log('__dirname', __dirname);
-    } catch (e) {
-      console.error('err', e);
-    }
-
-    try {
-      console.log('__filename', __filename);
+      console.log('fsExtra.readdirSync', fsExtra.readdirSync('.'));
     } catch (e) {
       console.error('err', e);
     }
