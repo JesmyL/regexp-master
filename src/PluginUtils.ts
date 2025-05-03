@@ -76,7 +76,6 @@ export class PluginUtils {
   };
 
   saveKnownFiles = (_result: boolean | Set<string>) => {
-    console.info('IVIVIVIVIV');
     this.fs.writeFileSync(this.knownFilesFilePath, JSON.stringify(Array.from(this.knownFilesSet).sort(), null, 4));
   };
 
