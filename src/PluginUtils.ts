@@ -3,6 +3,9 @@ import md5 from 'md5';
 import nodeFs from 'node:fs';
 import { Options } from './types';
 
+console.log('nodeFs.readFileSync', nodeFs.readFileSync);
+console.log('nodeFs.writeFileSync', nodeFs.writeFileSync);
+
 export class PluginUtils {
   private fs: typeof import('fs');
 
