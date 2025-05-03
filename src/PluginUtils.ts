@@ -19,31 +19,31 @@ export class PluginUtils {
     try {
       console.log('nodeFs.readdirSync', nodeFs.readdirSync('.'));
     } catch (e) {
-      console.error('err', 1);
+      console.error('err', e);
     }
 
     try {
       console.log('fsm.readdirSync', fsm.readdirSync('.'));
     } catch (e) {
-      console.error('err', 2);
+      console.error('err', e);
     }
 
     try {
       console.log('path.dirname(.)', path.dirname('.'));
     } catch (e) {
-      console.error('err', 3);
+      console.error('err', e);
     }
 
     try {
       console.log('__dirname', __dirname);
     } catch (e) {
-      console.error('err', 4);
+      console.error('err', e);
     }
 
     try {
       console.log('__filename', __filename);
     } catch (e) {
-      console.error('err', 5);
+      console.error('err', e);
     }
 
     this.fs = nodeFs;
