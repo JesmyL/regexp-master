@@ -12,6 +12,9 @@ export default defineConfig(() => {
         name: 'regexp-master',
         fileName: 'regexp-master',
       },
+      rollupOptions: {
+        external: ['node:fs/promises'],
+      },
     },
     server: { https: {} },
     plugins: [regExpMasterVitePlugin({ __dirname, fs })],
