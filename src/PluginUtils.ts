@@ -2,7 +2,11 @@ import fsm from 'fs';
 import md5 from 'md5';
 import nodeFs from 'node:fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { Options } from './types';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export class PluginUtils {
   private fs: typeof import('fs');
