@@ -3,17 +3,8 @@ import nodeFs from 'node:fs';
 import * as fsp from 'node:fs/promises';
 import { Options } from './types';
 
-import nodePath from 'node:path';
-import nodeUrl from 'node:url';
-
 console.log('fsp.writeFile', fsp.writeFile);
 console.log('fsp.readFile', fsp.readFile);
-console.log('nodePath', nodePath);
-console.log('nodeUrl', nodeUrl);
-console.log('========================================================================');
-console.log('fsp.keys', Object.keys(fsp).slice(0, 20));
-console.log('nodeUrl.keys', Object.keys(nodeUrl).slice(0, 20));
-console.log('nodePath.keys', Object.keys(nodePath).slice(0, 20));
 
 export class PluginUtils {
   private fs: typeof import('fs');
