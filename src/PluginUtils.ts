@@ -1,6 +1,6 @@
 import md5 from 'md5';
 import nodeFs from 'node:fs';
-import * as fsp from 'node:fs/promises';
+import fsp from 'node:fs/promises';
 import { Options } from './types';
 
 console.log('fsp.writeFile', fsp.writeFile);
