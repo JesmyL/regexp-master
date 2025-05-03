@@ -1,4 +1,3 @@
-import fsExtra from 'fs-extra';
 import md5 from 'md5';
 import nodeFs from 'node:fs';
 import { Options } from './types';
@@ -18,12 +17,6 @@ export class PluginUtils {
   knownFilesFilePath: string = './files.json';
 
   constructor({ srcDirName = 'src', fs }: Options) {
-    try {
-      console.log('fsExtra.readdirSync', fsExtra.readdirSync('.'));
-    } catch (e) {
-      console.error('err', e);
-    }
-
     this.fs = nodeFs;
     // this.dirName = __dirname.replace(/\\/g, '/');
     // if (this.dirName.endsWith(`/${srcDirName}`)) this.dirName = this.dirName.slice(0, -(srcDirName.length + 1));
