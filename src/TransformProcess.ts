@@ -1,3 +1,4 @@
+import { StrRegExpFlag } from 'model';
 import { makeRegExp } from './makeRegExp';
 import { testMaker } from './test.maker';
 import { GroupInfo, GroupName, GroupStubSymbol, StubSymbol } from './types';
@@ -23,6 +24,16 @@ export class TransformProcess {
   escapeStubSymbol = StubSymbol.def;
   openParenthesisStubSymbol = StubSymbol.def;
   closeParenthesisStubSymbol = StubSymbol.def;
+
+  flags: Record<StrRegExpFlag, boolean> = {
+    d: false,
+    g: false,
+    i: false,
+    m: false,
+    s: false,
+    u: false,
+    y: false,
+  };
 
   constructor(options: { importNameMatch: RegExpMatchArray; content: string; fileMD5: string }) {
     this.fileMD5 = options.fileMD5;
@@ -111,6 +122,10 @@ export class TransformProcess {
 
       let regStr = userWritedRegStr.slice(1, userWritedRegStr.lastIndexOf('/'));
       const regFlags = userWritedRegStr.slice(regStr.length + 2);
+
+      for (const flagKey in this.flags) {
+        this.flags[flagKey as 'i'] = regFlags.includes(flagKey);
+      }
 
       regStr = this.replaceEscapeds(regStr);
       regStr = this.replaceStringTemplateInserts(regStr);
@@ -286,10 +301,12 @@ export class TransformProcess {
         `namespace ${this.makeNamespaceTypeName('', namespaces.length)} {\n  ${
           //
           groupTypeParts.concat(uncountableGroupPartTypes).join('\n  ')
-        }\n\n  export interface I extends Record<\n    ${typeKey},\n    {\n      ${
+        }\n\n  export interface I extends Record<\n    ${typeKey},\n    ${
+          this.flags.i ? 'IgnoreCaseRecord<' : ''
+        }{\n      ${
           //
           recordFieldsTypes.join(';\n      ')
-        }\n    }\n  > { '': '' }\n}`,
+        }\n    }${this.flags.i ? '>' : ''}\n  > { '': '' }\n}`,
       );
     }
 

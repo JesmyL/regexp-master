@@ -1,11 +1,17 @@
-export type StrRegExp = `/${string}${string}/${'d' | ''}${'g' | ''}${'i' | ''}${'m' | ''}${'s' | ''}${'u' | ''}${
-  | 'y'
-  | ''}`;
+export type StrRegExpFlag = 'd' | 'g' | 'i' | 'm' | 's' | 'u' | 'y';
+export type StrRegExpFlags = `${F<'d'>}${F<'g'>}${F<'i'>}${F<'m'>}${F<'s'>}${F<'u'>}${F<'y'>}`;
+
+type F<F extends string> = F | '';
+export type StrRegExp = `/${string}${string}/${StrRegExpFlags}`;
 
 declare global {
   interface _GlobalScopedNamedRegExpMakerGeneratedTypes {
     ['/ /']: { $0: ' ' };
   }
+
+  type IgnoreCaseRecord<T extends object> = {
+    [K in keyof T]: T[K] extends string ? Uppercase<T[K]> | Lowercase<T[K]> : T[K];
+  };
 }
 
 type RegTypes = _GlobalScopedNamedRegExpMakerGeneratedTypes;
@@ -21,6 +27,8 @@ declare function makeNamedRegExp<R extends StrRegExp, Reg extends R extends keyo
 
 declare function makeRegExp(reg: StrRegExp, setLastIndexTo?: number): RegExp;
 
-declare function regExpMasterVitePlugin(options?: { srcDirName?: `/${string}` }): {
+export type PluginOptions = { srcDirName?: `/${string}` };
+
+declare function regExpMasterVitePlugin(options?: PluginOptions): {
   name: string;
 };

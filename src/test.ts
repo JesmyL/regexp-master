@@ -222,7 +222,9 @@ getValue<`${`${`a`}${string}` | ''}b${`a`}${string}`>(makeNamedRegExp(`/(?=(a+))
 getValue<`b`>(makeNamedRegExp(`/(?=a)?b/`).transform(arg).$0);
 getValue<{ $0: ''; $1: string }>(makeNamedRegExp(`/(?<=([ab]+)([bc]+))$/`).transform(arg));
 getValue<{ $0: `${number}.${number | ''}` }>(makeNamedRegExp(`/(?<=\\$)\\d+(?:\\.\\d*)?/`).transform(arg));
-getValue<{ $0: `.${'png' | 'gif' | 'jpeg' | 'jpg'}` }>(makeNamedRegExp(`/\\.(?:png|jpe?g|gif)$/i`).transform(arg));
+getValue<{ $0: `.${'png' | 'gif' | 'jpeg' | 'jpg' | 'PNG' | 'GIF' | 'JPEG' | 'JPG'}` }>(
+  makeNamedRegExp(`/\\.(?:png|jpe?g|gif)$/i`).transform(arg),
+);
 getValue<{ $0: `${'title' | 'name'}=${string}` }>(makeNamedRegExp(`/(?:title|name)=(["'])(.*?)\\1/`).transform(arg));
 
 // todo:

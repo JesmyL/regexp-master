@@ -755,7 +755,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_56 {
 
   export interface I extends Record<
     `/(?<$0th>(?<$1th>(?<$2nd>){,3})(nonamϭϰe| )+(?<$3th>\\d{2,3}){2,3}\\\\\\\\\\\\\\|\\\${ \\(?<$4>(?<$5th> {3,5}(?<$6th>(?<$7th>(?<$8th>))(){[234]?}(){,})Ϩ)\\)) ${string}in zero/gim`,
-    {
+    IgnoreCaseRecord<{
       $0: $0;
       $0th: $0th;
       $1th: $1th;
@@ -768,7 +768,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_56 {
       $8th: $8th;
       $10: $10;
       $11: $11
-    }
+    }>
   > { '': '' }
 }
 
@@ -779,11 +779,11 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_57 {
 
   export interface I extends Record<
     `/(?<$0th> |sds )(noname|)/gim`,
-    {
+    IgnoreCaseRecord<{
       $0: $0;
       $0th: $0th;
       $2: $2
-    }
+    }>
   > { '': '' }
 }
 
@@ -841,7 +841,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_59 {
 
   export interface I extends Record<
     `/(?<bookn>\\d?(?!(\\s*([а-яё]+))))\\s*((?<chapterStr>\\d{1,3})((:|\\s+)(?<verseStr>(?!\\d{1,3}))(\\s*(?<verseSeparator>[-,]?)\\s*)(?<!finishVerseStr>\\d{1,3})?)?)?/i`,
-    {
+    IgnoreCaseRecord<{
       $0: $0;
       bookn: bookn;
       $2?: $2;
@@ -853,7 +853,7 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_59 {
       verseStr: verseStr;
       $9: $9;
       verseSeparator: verseSeparator
-    }
+    }>
   > { '': '' }
 }
 
@@ -911,13 +911,13 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_62 {
 
   export interface I extends Record<
     `/(?<name>n)(?:just 1)(2)(?im-s:just 2)?(?<name1>n1)(?<=just 3)(4)(?<!just 4)/i`,
-    {
+    IgnoreCaseRecord<{
       $0: $0;
       name: name;
       $2: $2;
       name1: name1;
       $4: $4
-    }
+    }>
   > { '': '' }
 }
 
@@ -1458,9 +1458,9 @@ namespace Nc1e1ffc130aead13aa199b62448b178c_100 {
 
   export interface I extends Record<
     `/\\.(?:png|jpe?g|gif)$/i`,
-    {
+    IgnoreCaseRecord<{
       $0: $0
-    }
+    }>
   > { '': '' }
 }
 
