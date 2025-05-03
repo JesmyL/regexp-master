@@ -14,8 +14,9 @@ export class PluginUtils {
   knownFilesFilePath: string = './files.json';
 
   constructor({ srcDirName = 'src', fs }: Options) {
-    console.log('fsp.writeFile', fsp.writeFile);
-    console.log('fsp.readFile', fsp.readFile);
+    console.log('fsp', fsp);
+    console.log('keys(fsp)', Object.keys(fsp));
+    console.log('fsp.default', Object.keys(fsp?.default || { nonono: 'NNOO' }));
     console.log('process.cwd()', process.cwd());
 
     this.fs = fsp;
