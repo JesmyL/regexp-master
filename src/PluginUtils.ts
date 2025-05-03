@@ -4,21 +4,16 @@ import nodeFs from 'node:fs';
 import path from 'path';
 import { Options } from './types';
 
-console.log(import.meta, import.meta.dirname);
-
-const __filename = import.meta.url;
-const __dirname = path.dirname(__filename);
-
 export class PluginUtils {
   private fs: typeof import('fs');
 
-  dirName: string;
-  generatesDir: string;
+  dirName: string = '.';
+  generatesDir: string = '.';
 
   bracketsSet = new Set(['`', '"', "'"]);
 
-  knownFilesSet: Set<string>;
-  knownFilesFilePath: string;
+  knownFilesSet: Set<string> = new Set();
+  knownFilesFilePath: string = './files.json';
 
   constructor({ srcDirName = 'src', fs }: Options) {
     try {
@@ -52,25 +47,25 @@ export class PluginUtils {
     }
 
     this.fs = nodeFs;
-    this.dirName = __dirname.replace(/\\/g, '/');
-    if (this.dirName.endsWith(`/${srcDirName}`)) this.dirName = this.dirName.slice(0, -(srcDirName.length + 1));
+    // this.dirName = __dirname.replace(/\\/g, '/');
+    // if (this.dirName.endsWith(`/${srcDirName}`)) this.dirName = this.dirName.slice(0, -(srcDirName.length + 1));
 
-    this.generatesDir = `${this.dirName}/${srcDirName}/regexp-master.gen` as const;
-    this.knownFilesFilePath = `${this.generatesDir}/files.json` as const;
+    // this.generatesDir = `${this.dirName}/${srcDirName}/regexp-master.gen` as const;
+    // this.knownFilesFilePath = `${this.generatesDir}/files.json` as const;
 
-    console.log([this.dirName, this.generatesDir, this.knownFilesFilePath]);
+    // console.log([this.dirName, this.generatesDir, this.knownFilesFilePath]);
 
     let knownFiles: string[] = [];
 
-    try {
-      knownFiles = JSON.parse(`${this.fs.readFileSync(this.knownFilesFilePath)}`);
-    } catch (_error) {
-      if (!this.fs.existsSync(this.generatesDir)) {
-        this.fs.mkdirSync(this.generatesDir);
-      }
-    }
+    // try {
+    //   knownFiles = JSON.parse(`${this.fs.readFileSync(this.knownFilesFilePath)}`);
+    // } catch (_error) {
+    //   if (!this.fs.existsSync(this.generatesDir)) {
+    //     this.fs.mkdirSync(this.generatesDir);
+    //   }
+    // }
 
-    this.knownFilesSet = new Set(knownFiles);
+    // this.knownFilesSet = new Set(knownFiles);
   }
 
   checkIsInvalidSrcToTransform = (src: string) =>
