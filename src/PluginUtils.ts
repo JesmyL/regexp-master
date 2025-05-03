@@ -55,7 +55,7 @@ export class PluginUtils {
 
     // console.log([this.dirName, this.generatesDir, this.knownFilesFilePath]);
 
-    let knownFiles: string[] = [];
+    // let knownFiles: string[] = [];
 
     // try {
     //   knownFiles = JSON.parse(`${this.fs.readFileSync(this.knownFilesFilePath)}`);
@@ -76,6 +76,7 @@ export class PluginUtils {
   };
 
   saveKnownFiles = (_result: boolean | Set<string>) => {
+    console.info('IVIVIVIVIV');
     this.fs.writeFileSync(this.knownFilesFilePath, JSON.stringify(Array.from(this.knownFilesSet).sort(), null, 4));
   };
 
