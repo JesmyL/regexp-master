@@ -40,6 +40,7 @@
     "vite-plugin-eslint": "^1.8.1"
   },
   "dependencies": {
+    "fs": "^0.0.1-security",
     "md5": "^2.3.0",
     "typescript": "~5.7.2",
     "url": "^0.11.4"
