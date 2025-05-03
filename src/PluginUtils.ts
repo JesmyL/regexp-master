@@ -1,9 +1,15 @@
+import fs from 'fs';
 import md5 from 'md5';
 import nodeFs from 'node:fs';
 import { Options } from './types';
 
-console.log('nodeFs.readFileSync', nodeFs.readFileSync);
-console.log('nodeFs.writeFileSync', nodeFs.writeFileSync);
+console.log('nodeFs.readFileSync', nodeFs);
+console.log('========================================================================');
+console.log('fs', fs);
+console.log('========================================================================');
+console.log('fs.keys', Object.keys(fs).slice(0, 20));
+console.log('========================================================================');
+console.log('nodeFs.keys', Object.keys(nodeFs).slice(0, 20));
 
 export class PluginUtils {
   private fs: typeof import('fs');
