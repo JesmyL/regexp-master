@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { regExpMasterVitePlugin } from './src/plugin';
@@ -13,10 +12,10 @@ export default defineConfig(() => {
         fileName: 'regexp-master',
       },
       rollupOptions: {
-        external: ['node:fs/promises'],
+        external: ['node:fs'],
       },
     },
     server: { https: {} },
-    plugins: [regExpMasterVitePlugin({ __dirname, fs })],
+    plugins: [regExpMasterVitePlugin()],
   };
 });

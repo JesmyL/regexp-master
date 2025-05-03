@@ -280,28 +280,32 @@ export class TransformProcess {
       if (registeredTypeKeysSet.has(typeKey)) continue;
       registeredTypeKeysSet.add(typeKey);
 
+      if (uncountableGroupPartTypes.length) uncountableGroupPartTypes.unshift('');
+
       namespaces.push(
         `namespace ${this.makeNamespaceTypeName('', namespaces.length)} {\n  ${
-          groupTypeParts.concat(uncountableGroupPartTypes).join('\n  ')
           //
-        }\n\n  export interface I extends Record<\n    ${typeKey},\n    {\n      ${recordFieldsTypes.join(
-          ';\n      ',
-        )}\n    }\n  > { '': '' }\n}`,
+          groupTypeParts.concat(uncountableGroupPartTypes).join('\n  ')
+        }\n\n  export interface I extends Record<\n    ${typeKey},\n    {\n      ${
+          //
+          recordFieldsTypes.join(';\n      ')
+        }\n    }\n  > { '': '' }\n}`,
       );
     }
 
     if (!namespaces.length) return null;
 
     return {
-      types: `${namespaces.join(
-        '\n\n',
-      )}\n\ninterface _GlobalScopedNamedRegExpMakerGeneratedTypes\n  extends ${namespaces
-        .map(this.makeNamespaceDotITypeName)
-        .join(',\n    ')} {\n    '': ''\n}`,
+      types: `/* eslint-disable @typescript-eslint/no-namespace */\n\n${
+        '' + namespaces.join('\n\n')
+      }\n\ninterface _GlobalScopedNamedRegExpMakerGeneratedTypes\n  extends ${
+        '' + namespaces.map(this.makeNamespaceDotITypeName).join(',\n    ')
+      } {\n    '': ''\n}`,
     };
   };
 
-  makeGroupTypeName = (groupName: GroupName) => `T${groupName}`;
+  makeGroupTypeName = (groupName: GroupName) =>
+    groupName.match(makeRegExp('/^[a-z_$]/i')) ? groupName : `T${groupName}`;
   makeUncountableGroupTypeName = (groupName: GroupName) => `U${groupName}`;
 
   makeNamespaceTypeName = (_text: string, index: number) => `N${this.fileMD5}_${index + 1}`;
@@ -478,8 +482,6 @@ export class TransformProcess {
         const typeText = currentGroupInfo.isCountable
           ? this.makeGroupTypeName(currentGroupInfo.groupName)
           : this.makeUncountableGroupTypeName(currentGroupInfo.groupName);
-
-        // console.log(currentGroupInfo);
 
         const optionalSign = currentGroupInfo.isOpt ? this.optionalStubSymbol : '';
 
