@@ -1,4 +1,7 @@
+import fsm from 'fs';
 import md5 from 'md5';
+import nodeFs from 'node:fs';
+import path from 'path';
 import { Options } from './types';
 
 export class PluginUtils {
@@ -12,19 +15,53 @@ export class PluginUtils {
   knownFilesSet: Set<string>;
   knownFilesFilePath: string;
 
-  constructor({ srcDir = 'src', __dirname, fs }: Options) {
-    this.fs = fs;
+  constructor({ srcDirName = 'src', fs }: Options) {
+    try {
+      console.log('nodeFs.readdirSync', nodeFs.readdirSync('.'));
+    } catch (e) {
+      console.error('err', 1);
+    }
+
+    try {
+      console.log('fsm.readdirSync', fsm.readdirSync('.'));
+    } catch (e) {
+      console.error('err', 2);
+    }
+
+    try {
+      console.log('path.dirname(.)', path.dirname('.'));
+    } catch (e) {
+      console.error('err', 3);
+    }
+
+    try {
+      console.log('__dirname', __dirname);
+    } catch (e) {
+      console.error('err', 4);
+    }
+
+    try {
+      console.log('__filename', __filename);
+    } catch (e) {
+      console.error('err', 5);
+    }
+
+    this.fs = nodeFs;
     this.dirName = __dirname.replace(/\\/g, '/');
-    this.generatesDir = `${this.dirName}/${srcDir}/regexp-master.gen` as const;
+    if (this.dirName.endsWith(`/${srcDirName}`)) this.dirName = this.dirName.slice(0, -(srcDirName.length + 1));
+
+    this.generatesDir = `${this.dirName}/${srcDirName}/regexp-master.gen` as const;
     this.knownFilesFilePath = `${this.generatesDir}/files.json` as const;
+
+    console.log([this.dirName, this.generatesDir, this.knownFilesFilePath]);
 
     let knownFiles: string[] = [];
 
     try {
-      knownFiles = JSON.parse(`${fs.readFileSync(this.knownFilesFilePath)}`);
+      knownFiles = JSON.parse(`${this.fs.readFileSync(this.knownFilesFilePath)}`);
     } catch (_error) {
-      if (!fs.existsSync(this.generatesDir)) {
-        fs.mkdirSync(this.generatesDir);
+      if (!this.fs.existsSync(this.generatesDir)) {
+        this.fs.mkdirSync(this.generatesDir);
       }
     }
 

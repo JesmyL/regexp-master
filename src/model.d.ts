@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 export type StrRegExp = `/${string}${string}/${'d' | ''}${'g' | ''}${'i' | ''}${'m' | ''}${'s' | ''}${'u' | ''}${
   | 'y'
@@ -23,6 +23,6 @@ declare function makeNamedRegExp<R extends StrRegExp, Reg extends R extends keyo
 
 declare function makeRegExp(reg: StrRegExp, setLastIndexTo?: number): RegExp;
 
-declare function regExpMasterVitePlugin(options: { srcDir?: string; fs: typeof fs; __dirname: string }): {
+declare function regExpMasterVitePlugin(options: { srcDirName?: string; fs: typeof fs; __dirname: string }): {
   name: string;
 };
