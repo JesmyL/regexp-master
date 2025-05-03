@@ -1,6 +1,6 @@
 {
   "name": "regexp-master",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "type": "module",
   "main": "./build/regexp-master.umd.cjs",
   "module": "./build/regexp-master.js",
