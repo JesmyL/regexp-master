@@ -1,5 +1,5 @@
+import { PluginOptions, StrRegExpFlag } from '../types/model';
 import { makeRegExp } from './makeRegExp';
-import { PluginOptions, StrRegExpFlag } from './model';
 import { testMaker } from './test.maker';
 import { GroupInfo, GroupName, GroupStubSymbol, StubSymbol } from './types';
 

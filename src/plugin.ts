@@ -1,7 +1,7 @@
 import md5 from 'md5';
+import { regExpMasterVitePlugin as pluginMaker } from '../types/model';
 import { PluginUtils } from './PluginUtils';
 import { TransformProcess } from './TransformProcess';
-import { regExpMasterVitePlugin as pluginMaker } from './model';
 
 export const regExpMasterVitePlugin: typeof pluginMaker = pluginOptions => {
   const pluginUtils = new PluginUtils(pluginOptions);

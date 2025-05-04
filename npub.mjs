@@ -1,15 +1,7 @@
 import { exec } from 'child_process';
-import fs from 'fs';
-
-const copyFile = (fileName, dir) => {
-  fs.writeFileSync(`./build/${fileName}`, fs.readFileSync(`${dir}${fileName}`));
-};
 
 export const deployTheCode = async () => {
   await execAsync('npm run build');
-
-  copyFile('model.d.ts', './src/');
-  // copyFile('README.md', './');
 
   if (~process.argv.indexOf('--major')) {
     await execAsync('npm version major');

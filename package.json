@@ -4,16 +4,17 @@
   "type": "module",
   "main": "./build/regexp-master.umd.cjs",
   "module": "./build/regexp-master.js",
-  "types": "./build/model.d.ts",
+  "types": "./types/model.d.ts",
   "exports": {
     ".": {
-      "types": "./build/model.d.ts",
+      "types": "./types/model.d.ts",
       "require": "./build/regexp-master.umd.cjs",
       "import": "./build/regexp-master.js"
     }
   },
   "files": [
-    "build"
+    "build",
+    "types"
   ],
   "keywords": [
     "типизированные",

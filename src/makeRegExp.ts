@@ -1,4 +1,4 @@
-import { makeRegExp as maker } from './model';
+import { makeRegExp as maker } from '../types/model';
 
 const regs: Record<string, RegExp> = {};
 

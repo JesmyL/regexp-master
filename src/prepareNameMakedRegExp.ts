@@ -1,5 +1,5 @@
+import { StrRegExp } from '../types/model';
 import { makeRegExp } from './makeRegExp';
-import { StrRegExp } from './model';
 import { TransformProcess } from './TransformProcess';
 
 const numbersSet = new Set(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']);

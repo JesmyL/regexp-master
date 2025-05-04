@@ -1,4 +1,4 @@
-import { regExpMasterVitePlugin } from './model';
+import { regExpMasterVitePlugin } from '../types/model';
 
 export type Options = Parameters<typeof regExpMasterVitePlugin>[0];
 

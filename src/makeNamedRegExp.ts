@@ -1,5 +1,5 @@
+import { NamedRegExpRegulars, makeNamedRegExp as maker } from '../types/model';
 import { makeRegExp } from './makeRegExp';
-import { NamedRegExpRegulars, makeNamedRegExp as maker } from './model';
 import { prepareNameMakedRegExp } from './prepareNameMakedRegExp';
 import { TransformProcess } from './TransformProcess';
 
