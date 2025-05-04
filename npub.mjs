@@ -8,8 +8,8 @@ const copyFile = (fileName, dir) => {
 export const deployTheCode = async () => {
   await execAsync('npm run build');
 
-  // copyFile('model.d.ts', './src/');
-  // copyFile('README.md', './');
+  copyFile('model.d.ts', './src/');
+  copyFile('README.md', './');
 
   if (~process.argv.indexOf('--major')) {
     await execAsync('npm version major');

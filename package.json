@@ -13,10 +13,7 @@
     }
   },
   "files": [
-    "build",
-    "src/model.d.ts",
-    "build/regexp-master.umd.cjs",
-    "build/regexp-master.cjs"
+    "build"
   ],
   "keywords": [
     "типизированные",
