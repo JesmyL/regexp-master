@@ -1,4 +1,4 @@
-import { makeNamedRegExp } from 'model';
+import { makeNamedRegExp } from '../types/model';
 
 const getValue = <Value>(_: Value) => {};
 const getKeys = <ReqKeys extends string, OptKeys extends string = string>(
