@@ -1,7 +1,7 @@
+type F<F extends string> = F | '';
+
 export type StrRegExpFlag = 'd' | 'g' | 'i' | 'm' | 's' | 'u' | 'y';
 export type StrRegExpFlags = `${F<'d'>}${F<'g'>}${F<'i'>}${F<'m'>}${F<'s'>}${F<'u'>}${F<'y'>}`;
-
-type F<F extends string> = F | '';
 export type StrRegExp = `/${string}${string}/${StrRegExpFlags}`;
 
 declare global {
@@ -32,6 +32,6 @@ export type PluginOptions = {
   collectClassCharactersMaxCount?: 'unlimited' | number;
 };
 
-declare function regExpMasterVitePlugin(options?: PluginOptions): {
+declare function regExpertVitePlugin(options?: PluginOptions): {
   name: string;
 };

@@ -1,13 +1,13 @@
 import md5 from 'md5';
-import { regExpMasterVitePlugin as pluginMaker } from '../types/model';
+import { regExpertVitePlugin as pluginMaker } from '../types/model';
 import { PluginUtils } from './PluginUtils';
 import { TransformProcess } from './TransformProcess';
 
-export const regExpMasterVitePlugin: typeof pluginMaker = pluginOptions => {
+export const regExpertVitePlugin: typeof pluginMaker = pluginOptions => {
   const pluginUtils = new PluginUtils(pluginOptions);
 
   return {
-    name: 'regExpMasterVitePlugin',
+    name: 'regExpertVitePlugin',
     enforce: 'pre',
     watchChange: async (src: string, change: { event: 'create' | 'update' | 'delete' }) => {
       if (pluginUtils.checkIsInvalidSrcToTransform(src)) return;

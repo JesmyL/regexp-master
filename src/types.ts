@@ -1,6 +1,6 @@
-import { regExpMasterVitePlugin } from '../types/model';
+import { regExpertVitePlugin } from '../types/model';
 
-export type Options = Parameters<typeof regExpMasterVitePlugin>[0];
+export type Options = Parameters<typeof regExpertVitePlugin>[0];
 
 export type GroupInfo = {
   isOpt: boolean;

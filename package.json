@@ -3,14 +3,14 @@
   "description": "Make types for your RegExp",
   "version": "0.0.1",
   "type": "module",
-  "main": "./build/regexp-master.umd.cjs",
-  "module": "./build/regexp-master.js",
+  "main": "./build/regexpert.umd.cjs",
+  "module": "./build/regexpert.js",
   "types": "./types/model.d.ts",
   "exports": {
     ".": {
       "types": "./types/model.d.ts",
-      "require": "./build/regexp-master.umd.cjs",
-      "import": "./build/regexp-master.js"
+      "require": "./build/regexpert.umd.cjs",
+      "import": "./build/regexpert.js"
     }
   },
   "files": [

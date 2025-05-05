@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import { regExpMasterVitePlugin } from './src/plugin';
+import { regExpertVitePlugin } from './src/plugin';
 
 export default defineConfig(() => {
   return {
@@ -8,14 +8,14 @@ export default defineConfig(() => {
       outDir: 'build',
       lib: {
         entry: resolve(__dirname, 'src/index.js'),
-        name: 'regexp-master',
-        fileName: 'regexp-master',
+        name: 'regexpert',
+        fileName: 'regexpert',
       },
       rollupOptions: {
         external: ['node:fs'],
       },
     },
     server: { https: {} },
-    plugins: [regExpMasterVitePlugin()],
+    plugins: [regExpertVitePlugin()],
   };
 });

@@ -1,7 +1,7 @@
 ## 🕹️Installation and use
 
 ```sh
-npm install regexp-master
+npm install regexpert
 ```
 
 ### What is needed for work
@@ -11,11 +11,11 @@ npm install regexp-master
 ```ts
 // vite.config.ts
 
-import { regExpMasterVitePlugin } from 'regexp-master';
+import { regExpertVitePlugin } from 'regexpert';
 
 export default defineConfig(() => {
   return {
-    plugins: [regExpMasterVitePlugin()],
+    plugins: [regExpertVitePlugin()],
   };
 });
 ```
@@ -33,7 +33,7 @@ npm run dev
 ```ts
 // your-file.ts
 
-import { makeNamedRegExp } from 'regexp-master';
+import { makeNamedRegExp } from 'regexpert';
 
 const { regExp: myFavouriteRegExp, transform: transformMyFavouriteRegExp } = makeNamedRegExp(
   `/(1)\\s?text between\\s(?<groupName>named group)( )?\\k<groupName>?/`,

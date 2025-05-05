@@ -14,7 +14,7 @@ export class PluginUtils {
   constructor({ srcDirName = '/src' }: Options = {}) {
     this.dirName = process.cwd().replace(/\\/g, '/');
 
-    this.generatesDir = `${this.dirName}${srcDirName === '/' ? '' : srcDirName}/regexp-master.gen` as const;
+    this.generatesDir = `${this.dirName}${srcDirName === '/' ? '' : srcDirName}/regexpert.gen` as const;
     this.knownFilesFilePath = `${this.generatesDir}/files.json` as const;
 
     let knownFiles: string[] = [];
