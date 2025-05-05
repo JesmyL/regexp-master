@@ -1,5 +1,6 @@
 {
   "name": "regexp-master",
+  "description": "Make types for your RegExp",
   "version": "0.0.67",
   "type": "module",
   "main": "./build/regexp-master.umd.cjs",
