@@ -217,7 +217,6 @@ export class TransformProcess {
         }
 
         const groupContent = groupStr.slice(isNoname ? 1 : matchedGroupName.length + 4, groupStr.lastIndexOf(')'));
-
         const isOptChildren = isEachGroupIsOptional || groupContent.includes('|');
 
         countableGroupi++;
@@ -248,10 +247,9 @@ export class TransformProcess {
 
       Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
         groupInfo.isNever = this.checkIsGroupNever(groupInfo);
-        groupInfo.isOpt = this.someOfGroupParents(
-          groupInfo,
-          parentInfo => parentInfo.isOpt || parentInfo.isOptChildren,
-        );
+        groupInfo.isOpt =
+          groupInfo.isOpt ||
+          this.someOfGroupParents(groupInfo, parentInfo => parentInfo.isOpt || parentInfo.isOptChildren);
       });
 
       Object.values(wholeGroupSymbolToInfoDict).forEach(groupInfo => {
@@ -441,8 +439,8 @@ export class TransformProcess {
     let content = groupInfo.groupContent.replace(makeRegExp(`/(?<!${this.escapeStubSymbol})(?:[$^])/g`), '');
 
     content = content.replace(
-      makeRegExp(`/\\\\{2}(?:(\\d+)|k?<([\\w$_]+)>)(${this.quantifierRegStr}|)/g`),
-      (all, linkNumber: string | undefined, linkName: string | undefined, quantifier: string, linkIndex: number) => {
+      makeRegExp(`/\\\\{2}(?:(\\d+)|k<([\\w$_]+)>)(${this.quantifierRegStr}|)/g`),
+      (all, linkNumber: string | undefined, linkName: string | undefined, quantifier: string) => {
         if (!linkNumber && !linkName) return all;
 
         let linkTypeName: string | null = null;

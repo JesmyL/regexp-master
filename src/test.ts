@@ -170,8 +170,8 @@ getValue<{ $0: `\\\${2}\\\\\\\${2}` }>(makeNamedRegExp(`/(\\\${2})\\\\\\1/g`).tr
 getValue<{ $0: `\${2}\\\\\${2}` }>(makeNamedRegExp(`/($\{2})\\\\\\1/g`).transform(arg).$0);
 
 getValue<{ $0: `\\\${2}\\\\${`\\\${2}` | ''}` }>(makeNamedRegExp(`/(\\\$\{2})\\\\\\1?/g`).transform(arg));
-getValue<{ $0: `\\\${n}\\\\${`\\\${n}` | ''} \\\\\${n} ` }>(
-  makeNamedRegExp(`/(?<nnn>\\\$\{n})\\\\\\k<nnn>? \\\\<nnn> /g`).transform(arg),
+getValue<{ $0: `\\\${n}\\\\${`\\\${n}` | ''} \\<nnn> ` }>(
+  makeNamedRegExp(`/(?<nnn>\\\$\{n})\\\\\\k<nnn>? \\<nnn> /g`).transform(arg),
 );
 getValue<{ $0: `\\\${2}\\\\\\\${2}` }>(makeNamedRegExp(`/(\\$\{2})\\\\\\1/g`).transform(arg));
 getValue<{ $0: `\\\${2}\\\${2}` }>(makeNamedRegExp(`/(?<a>\\$\{2})\\k<a>/g`).transform(arg));
@@ -221,7 +221,7 @@ getValue<{ $0: 'WORD' }>(makeNamedRegExp(`/\\bWORD\\B/`).transform(arg));
 getValue<`${`${`a`}${string}` | ''}b${`a`}${string}`>(makeNamedRegExp(`/(?=(a+))a*b\\1/`).transform(arg).$0);
 getValue<`b`>(makeNamedRegExp(`/(?=a)?b/`).transform(arg).$0);
 getValue<{ $0: ''; $1: string }>(makeNamedRegExp(`/(?<=([ab]+)([bc]+))$/`).transform(arg));
-getValue<{ $0: `${number}.${number | ''}` }>(makeNamedRegExp(`/(?<=\\$)\\d+(?:\\.\\d*)?/`).transform(arg));
+getValue<{ $0: `${number}${`.${number}` | ''}` }>(makeNamedRegExp(`/(?<=\\$)\\d+(?:\\.\\d+)?/`).transform(arg));
 getValue<{ $0: `.${'png' | 'gif' | 'jpeg' | 'jpg' | 'PNG' | 'GIF' | 'JPEG' | 'JPG'}` }>(
   makeNamedRegExp(`/\\.(?:png|jpe?g|gif)$/i`).transform(arg),
 );
@@ -230,5 +230,9 @@ getValue<{ $0: `${string} ${string} ${string} ${string}  ` }>(
   makeNamedRegExp(`/\\w \\W \\s \\S \\B \\b/`).transform(arg),
 );
 
-// todo:
-// \P{Script_Extensions=Latin}
+getValue<{ $0: `1${string | ''}text between${string}${`named group` | ''}${' ' | ''}` }>(
+  makeNamedRegExp(`/(1)\\s?text between\\s(?<groupName>named group)?( )?/`).transform(arg),
+);
+
+// // todo:
+// // \P{Script_Extensions=Latin}

@@ -4,7 +4,7 @@ import { TransformProcess } from './TransformProcess';
 
 const numbersSet = new Set(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']);
 const groupKeysStr = '=!<:ims';
-const findNamedGroupsReg = makeRegExp(`/(\\\\*)\\((?:\\?(?:k?<([\\w$_]+)>|k?<()>|([${groupKeysStr}])))?/g`);
+const findNamedGroupsReg = makeRegExp(`/(\\\\*)\\((?:\\?(?:k<([\\w$_]+)>|k<()>|([${groupKeysStr}])))?/g`);
 
 export const prepareNameMakedRegExp = (reg: StrRegExp, errorsStore?: string[]) => {
   let openPosition = 0;
