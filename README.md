@@ -36,11 +36,11 @@ npm run dev
 import { makeNamedRegExp } from 'regexp-master';
 
 const { regExp: myFavouriteRegExp, transform: transformMyFavouriteRegExp } = makeNamedRegExp(
-  `/(1)\\s?text between\\s(?<groupName>named group)?/`,
+  `/(1)\\s?text between\\s(?<groupName>named group)( )?\\k<groupName>?/`,
 );
 
 // There will be a conversion to such RegExp - this will work in browsers in IOS
-console.info(regExp); // /(1)\s?text between\s(named group)?( )?/
+console.info(regExp); // /(1)\s?text between\s(named group)?( )?\2/
 ```
 
 ### What is the main task?
@@ -48,24 +48,30 @@ console.info(regExp); // /(1)\s?text between\s(named group)?( )?/
 ```ts
 // Let's find a suitable line:
 
-const matches = '1text between named group'.match(myFavouriteRegExp); // ['1text between named group', '1', 'named group', undefined]
+const matches = '1text between named group'.match(myFavouriteRegExp);
+// [
+//   '1text between named group ',
+//   '1',
+//   'named group',
+//   ' '
+// ]
 
 // Let's pass the result to the transform function
 const result = transformMyFavouriteRegExp(matches);
 
 console.info(result);
 // {
-//   $0: '1text between named group',
-//   $1: '1',
+//   '$0': '1text between named group ',
+//   '$1': '1',
 //   groupName: 'named group',
-//   $3: undefined,
+//   '$3': ' '
 // }
 
 type Result = typeof result;
 // Result is {
-//   $0: `1${string | ''}text between${string}${'named group' | ''}${' ' | ''}`,
+//   $0: `1${string | ''}text between${string}named group${' ' | ''}${'named group' | ''}`,
 //   $1: '1',
-//   groupName?: 'named group',
+//   groupName: 'named group',
 //   $3?: ' ',
 // }
 ```

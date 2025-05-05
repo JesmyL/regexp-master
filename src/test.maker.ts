@@ -5,7 +5,7 @@ const printMatch = (
   text: string,
 ) => {
   const match = text.match(regExp);
-  console.info({ text, regExp, match: match && [transform(match).$0, transform(match)] });
+  console.info({ text, regExp, matchDict: match && [transform(match).$0, transform(match)], match });
 };
 
 export const testMaker = () => {
@@ -18,10 +18,10 @@ export const testMaker = () => {
         //////////////////////////////////////////////////////
  `);
 
-  if (1) {
+  if (0) {
     const regs = makeNamedRegExp(
       // X    1 X        2         3   4    X      5
-      `/(?!&&)()(?<! %%%)(?<a> )[|](?:)(888)(?: ){}(\\2)(\\<a>?)/`,
+      `/(?!&&)()(?<! %%%)(?<a> )[|](?:)(888)(?: ){}(\\2)(\\k<a>?)/`,
     );
 
     printMatch(regs, ' |888 {}  ');
@@ -29,7 +29,7 @@ export const testMaker = () => {
     printMatch(regs, ' |888 {}');
   }
 
-  if (1) {
+  if (0) {
     const regs = makeNamedRegExp(`/(?:a|(b))\\1c/`);
 
     regs.transform(arg).$0;
@@ -43,6 +43,12 @@ export const testMaker = () => {
     // NULL
     printMatch(regs, 'a\x01c');
     printMatch(regs, 'abc');
+  }
+
+  if (1) {
+    const regs = makeNamedRegExp(`/(1)\\s?text between\\s(?<groupName>named group)( )?\\k<groupName>?/`);
+
+    printMatch(regs, '1text between named group ');
   }
 
   console.info(`

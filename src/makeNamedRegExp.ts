@@ -10,7 +10,7 @@ export const makeNamedRegExp: typeof maker = (stringRegExp, setLastIndexTo) => {
     const { positionedNames, perparedRegStr, positions } = prepareNameMakedRegExp(stringRegExp as never, undefined);
     let namesToPositions: Record<string, number> | null = null;
 
-    const regStr = perparedRegStr.replace(makeRegExp('/(\\\\+)<([$_a-z][\\w$_]*)>/gi'), (all, slashes, name) => {
+    const regStr = perparedRegStr.replace(makeRegExp('/(\\\\+)k<([$_a-z][\\w$_]*)>/gi'), (all, slashes, name) => {
       if (namesToPositions === null) {
         namesToPositions = {};
         Object.entries(positionedNames).forEach(([key, value]) => (namesToPositions![value] = +key));
