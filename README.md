@@ -1,12 +1,12 @@
-## 🕹️Установка и использование
+## 🕹️Installation and use
 
 ```sh
 npm install regexp-master
 ```
 
-### Что нужно для работы
+### What is needed for work
 
-#### 1. Зарегистрировать plugin
+#### 1. Register plugin
 
 ```ts
 // vite.config.ts
@@ -20,15 +20,15 @@ export default defineConfig(() => {
 });
 ```
 
-#### 2. Запустить проект
+#### 2. Start a project
 
 ```sh
 npm run dev
 ```
 
-> ### Разбор типов происходит только при запущеном проекте!
+> ### Type parsing occurs only when the project is running!
 
-#### 3. Наисать свой RegExp
+#### 3. Write your RegExp
 
 ```ts
 // your-file.ts
@@ -39,18 +39,18 @@ const { regExp: myFavouriteRegExp, transform: transformMyFavouriteRegExp } = mak
   `/(1)\\s?text between\\s(?<groupName>named group)?/`,
 );
 
-// Будет преобразование в такое RegExp - так будет работать в браузерах в IOS
+// There will be a conversion to such RegExp - this will work in browsers in IOS
 console.info(regExp); // /(1)\s?text between\s(named group)?( )?/
 ```
 
-### Какая главная задача?
+### What is the main task?
 
 ```ts
-// Найдём подходящую строку:
+// Let's find a suitable line:
 
 const matches = '1text between named group'.match(myFavouriteRegExp); // ['1text between named group', '1', 'named group', undefined]
 
-// Передадим результат в функцию transform
+// Let's pass the result to the transform function
 const result = transformMyFavouriteRegExp(matches);
 
 console.info(result);
@@ -70,23 +70,23 @@ type Result = typeof result;
 // }
 ```
 
-### Что мы получаем?
+### What do we get?
 
-1. Удобное использование преобразованного объектв
-2. Получаем ожидаемые типы по каждому полю
-3. Наверняка знаем какое поле будет опциональным
+1. Convenient use of the transformed object
+2. We get the expected types for each field
+3. We know for sure which field will be optional
 
-> При каждом вашем изменении будут автоматически генерироваться файлы с вашими типами, которые вы всегда сможете просмотреть и проинспектировать
+> Every time you make a change, files with your types will be automatically generated, which you can always view and inspect.
 
-> ### <font color="red">Формат</font>
+> ### Format
 >
-> Используйте только косые кавычки для написания StrRegExp
+> Use only forward quotation (`) marks when writing StrRegExp
 >
 > ```ts
 > const { regExp } = makeNamedRegExp(`/HI(?: World)/ig`);
 > ```
 >
-> А так работать не будет
+> But it won't work like that
 >
 > ```ts
 > const { regExp } = makeNamedRegExp('/HI(?: World)/ig');

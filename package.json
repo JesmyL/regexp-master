@@ -17,17 +17,23 @@
     "types"
   ],
   "keywords": [
-    "типизированные",
-    "регулярка",
-    "регулярные выражения",
-    "регулярки",
-    "typescript",
+    "safe",
+    "match",
+    "replace",
+    "exec",
+    "regular",
+    "regular expressions",
+    "expressions",
     "regexp",
-    "regexp with types",
     "regex",
-    "regex with types",
-    "typified regex",
-    "typified regexp"
+    "typified",
+    "typescript",
+    "types",
+    "type",
+    "with",
+    "vite",
+    "vite plugin",
+    "vite-plugin"
   ],
   "scripts": {
     "dev": "vite",
