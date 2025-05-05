@@ -1,7 +1,7 @@
 {
-  "name": "regexp-master",
+  "name": "regexpert",
   "description": "Make types for your RegExp",
-  "version": "0.0.71",
+  "version": "0.0.0",
   "type": "module",
   "main": "./build/regexp-master.umd.cjs",
   "module": "./build/regexp-master.js",
