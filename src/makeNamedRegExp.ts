@@ -16,7 +16,7 @@ export const makeNamedRegExp: typeof maker = (stringRegExp, setLastIndexTo) => {
         Object.entries(positionedNames).forEach(([key, value]) => (namesToPositions![value] = +key));
       }
 
-      if (TransformProcess.checkIs4xSlashes(slashes)) return all;
+      if (TransformProcess.checkIs2xSlashes(slashes)) return all;
 
       return `${slashes}${namesToPositions[name]}`;
     });

@@ -23,7 +23,6 @@ export const prepareNameMakedRegExp = (reg: StrRegExp, errorsStore?: string[]) =
       restContent: string,
     ) => {
       if (TransformProcess.checkIs4xSlashes(slashes)) return all;
-      console.log(key);
       if (key !== undefined && key.match(makeRegExp(`/^[=!<:ims]/`))) return all;
 
       openPosition++;
