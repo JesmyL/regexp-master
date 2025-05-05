@@ -3,13 +3,9 @@ import { exec } from 'child_process';
 export const deployTheCode = async () => {
   await execAsync('npm run build');
 
-  if (~process.argv.indexOf('--major')) {
-    await execAsync('npm version major');
-  } else if (~process.argv.indexOf('--minor')) {
-    await execAsync('npm version minor');
-  } else {
-    await execAsync('npm version patch');
-  }
+  // await execAsync('npm version major');
+  // await execAsync('npm version minor');
+  await execAsync('npm version patch');
 
   await execAsync('npm publish');
 };
